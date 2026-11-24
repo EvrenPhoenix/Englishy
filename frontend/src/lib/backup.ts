@@ -11,6 +11,7 @@ import {
   VARIETIES,
 } from "../../../shared/constants";
 import { learnerDb, notifyStore } from "./database";
+import { mergeLessons } from "./merge-lessons";
 import { learnerDatabase } from "./storage-keys";
 import { defaultPreferences, type Preferences } from "./preferences";
 
@@ -206,35 +207,6 @@ export function parseBackup(
       ? `This ${BRAND.name} file is damaged or from an unsupported version.`
       : `This is not a ${BRAND.name} backup file.`,
   };
-}
-
-/** Decide which incoming lesson rows to write, merged with what is on this device. */
-export function mergeLessons(
-  incoming: LessonRecord[],
-  existing: Map<string, LessonRecord>,
-): LessonRecord[] {
-  return incoming
-    .filter((row) => {
-      const current = existing.get(row.lessonId);
-      return (
-        !current ||
-        row.bestScore > current.bestScore ||
-        (row.status === "completed" && current.status !== "completed")
-      );
-    })
-    .map((row) => {
-      const current = existing.get(row.lessonId);
-      return current
-        ? {
-            ...row,
-            attempts: Math.max(row.attempts, current.attempts),
-            startedAt:
-              current.startedAt < row.startedAt
-                ? current.startedAt
-                : row.startedAt,
-          }
-        : row;
-    });
 }
 
 /**
