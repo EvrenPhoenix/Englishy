@@ -1,7 +1,9 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
-import { Menu, WifiOff } from "lucide-react";
+import { Menu, RefreshCw, WifiOff } from "lucide-react";
+import { Button } from "./FormControls";
+import { applyUpdate, onUpdateReady } from "../lib/service-worker";
 import { BRAND } from "../../../shared/brand";
 import { useTranslate } from "../i18n/provider";
 import { readString, storageKeys, writeString } from "../lib/storage-keys";
@@ -65,6 +67,8 @@ export function AppShell() {
       window.removeEventListener("offline", update);
     };
   }, []);
+  const [updateReady, setUpdateReady] = useState(false);
+  useEffect(() => onUpdateReady(() => setUpdateReady(true)), []);
   useEffect(() => setDrawer(false), [pathname, search]);
   useEffect(() => {
     if (drawer && !dialog.current?.open) dialog.current?.showModal();
@@ -123,7 +127,7 @@ export function AppShell() {
           </Link>
           <NewChat header />
         </header>
-        {(!online || !persistent) && (
+        {(!online || !persistent || updateReady) && (
           <div className="flex shrink-0 flex-col items-center gap-2 px-4 pt-3">
             {!online && (
               <div
@@ -140,6 +144,22 @@ export function AppShell() {
                 className="max-w-2xl rounded-2xl bg-warning-soft px-4 py-2 text-sm"
               >
                 {t("app.storageUnavailable")}
+              </div>
+            )}
+            {updateReady && (
+              <div
+                role="status"
+                className="flex flex-wrap items-center justify-center gap-3 rounded-full bg-indigo-soft py-1.5 ps-4 pe-1.5 text-sm"
+              >
+                <span>{t("app.updateReady")}</span>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  icon={RefreshCw}
+                  onClick={applyUpdate}
+                >
+                  {t("app.updateNow")}
+                </Button>
               </div>
             )}
           </div>
