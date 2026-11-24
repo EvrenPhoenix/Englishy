@@ -8,6 +8,9 @@ import { AppShell } from "./components/AppShell";
 import { navItems, type Destination } from "./components/navigation";
 import { Placeholder } from "./pages/Placeholder";
 
+const Dashboard = lazy(async () => ({
+  default: (await import("./pages/Dashboard")).Dashboard,
+}));
 const LearnPage = lazy(async () => ({
   default: (await import("./pages/LearnPage")).LearnPage,
 }));
@@ -22,6 +25,7 @@ const ConversationList = lazy(async () => ({
 }));
 
 const pages: Partial<Record<Destination, React.ReactElement>> = {
+  home: <Dashboard />,
   progress: <ProgressPage />,
   conversation: <ConversationList />,
   learn: <LearnPage />,
