@@ -1077,6 +1077,175 @@ Object.assign(pages, {
   },
 });
 
+const reportReply = {
+  json: {
+    successes: ["You greeted the waiter politely.", "You ordered clearly."],
+    corrections: [
+      {
+        original: "I want a coffee",
+        corrected: "Could I have a coffee, please?",
+        explanation: "More polite.",
+      },
+    ],
+    alternatives: [
+      {
+        original: "Give me the bill",
+        natural: "Could we have the bill, please?",
+      },
+    ],
+    vocabulary: [
+      { word: "bill", meaning: "the paper that shows how much to pay" },
+    ],
+    nextSteps: ["Practise asking for the menu."],
+  },
+};
+const startConversation = async (p) => {
+  await p.locator("main button.w-full.h-12, main button.w-full").last().click();
+  await p.locator("#conv-title").waitFor();
+};
+const converse = async (p) => {
+  await startConversation(p);
+  await sendMessage(p, "Hello, I would like a table for two.");
+  await p.locator("main .prose-tutor").nth(1).waitFor();
+};
+const chip = (p, n) =>
+  p.locator("main [role=group][aria-label=Help] button").nth(n).click();
+Object.assign(pages, {
+  "Conversation-setup": { path: "/conversation/ordering-food", ready: h1 },
+  "Conversation-missing": {
+    path: "/conversation/no-such-scenario",
+    ready: (p) => p.locator("main .border-dashed").waitFor(),
+  },
+  "Conversation-start": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    act: startConversation,
+  },
+  "Conversation-reply": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    api: {
+      conversation: {
+        sse: ["Of course! ", "Follow me, please. 💡 Tip: say *please*."],
+      },
+    },
+    act: converse,
+  },
+  "Conversation-vocab": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    act: async (p) => {
+      await startConversation(p);
+      await chip(p, 1);
+    },
+  },
+  "Conversation-starters": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    act: async (p) => {
+      await startConversation(p);
+      await chip(p, 2);
+      await p.locator("main .rounded-3xl.bg-surface-2 button").first().click();
+    },
+  },
+  "Conversation-suggest": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    api: {
+      assist: {
+        json: {
+          suggestions: [
+            "A table for two, please.",
+            "Do you have a free table?",
+          ],
+        },
+      },
+    },
+    act: async (p) => {
+      await startConversation(p);
+      await chip(p, 0);
+      await p.locator("main .bg-indigo-soft button").first().waitFor();
+    },
+  },
+  "Conversation-explain": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    api: {
+      assist: {
+        json: {
+          text: "The waiter is asking how many people are with you.\nAnswer with a number.",
+        },
+      },
+    },
+    act: async (p) => {
+      await startConversation(p);
+      await chip(p, -1);
+      await p.locator("main .bg-indigo-soft p").waitFor();
+    },
+  },
+  "Conversation-report": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    api: { conversation: { sse: ["Of course!"] }, report: reportReply },
+    act: async (p) => {
+      await converse(p);
+      await p.locator("main header button.h-9").last().click();
+      await p.locator("main h1", { hasText: "Ordering" }).first().waitFor();
+      await p.getByText("What went well").waitFor();
+    },
+  },
+  "Conversation-report-invalid": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    api: {
+      conversation: { sse: ["Of course!"] },
+      report: { json: { successes: "x" } },
+    },
+    act: async (p) => {
+      await converse(p);
+      await p.locator("main header button.h-9").last().click();
+      await p.locator("main [role=alert]").waitFor();
+    },
+  },
+  "Conversation-unavailable": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    api: {
+      status: { json: { enabled: false, configured: false, available: false } },
+    },
+    act: (p) => p.locator("main [role=status]").first().waitFor(),
+  },
+  "Conversation-save-data": {
+    path: "/conversation/ordering-food",
+    ready: h1,
+    api: { conversation: { sse: ["Of course!"] }, report: reportReply },
+    act: async (p) => {
+      await converse(p);
+      await p.locator("main header button.h-9").last().click();
+      await p.getByText("What went well").waitFor();
+    },
+  },
+});
+for (const id of [
+  "introduce-yourself",
+  "new-friend",
+  "ordering-food",
+  "shopping-clothes",
+  "groceries",
+  "directions",
+  "hotel",
+  "train",
+  "airport",
+  "doctor",
+  "phone-call",
+  "job-interview",
+  "colleague",
+  "small-talk",
+  "presentation",
+  "discussion",
+])
+  pages["Scenario:" + id] = { path: "/conversation/" + id, ready: h1 };
+
 const grammarIds = [
   "parts-of-speech",
   "nouns",
