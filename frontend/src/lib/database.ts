@@ -110,14 +110,19 @@ interface ChatSummary {
   title: string;
   updatedAt: string;
   kind: string;
+  scenarioId?: string;
+  report?: unknown;
 }
-export async function recentTutorChats(): Promise<ChatSummary[]> {
+async function chatsOfKind(kind: string): Promise<ChatSummary[]> {
   const rows: ChatSummary[] =
     (await (await database)?.getAll(stores.conversations)) ?? [];
   return rows
-    .filter((row) => row.kind === "tutor")
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-    .slice(0, 30);
+    .filter((row) => row.kind === kind)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+}
+export const scenarioChats = () => chatsOfKind("scenario");
+export async function recentTutorChats() {
+  return (await chatsOfKind("tutor")).slice(0, 30);
 }
 export async function minutesToday() {
   const date = new Date();
