@@ -149,3 +149,46 @@ export interface LessonProgress {
 export async function readLessonProgress(): Promise<LessonProgress[]> {
   return (await (await database)?.getAll(stores.lessons)) ?? [];
 }
+export interface Activity {
+  day: string;
+  at: string;
+  type: string;
+  durationSec: number;
+  xp: number;
+}
+export interface SavedWord {
+  srs: { lastReviewed: string | null; interval: number };
+}
+export interface ExerciseResult {
+  at: string;
+  lessonId: string;
+  correct: boolean;
+}
+export const progressStores = [
+  stores.activities,
+  stores.lessons,
+  stores.vocab,
+  stores.results,
+] as const;
+export async function readProgressRecords() {
+  const db = await database;
+  const [activities, lessons, vocab, results]: [
+    Activity[],
+    LessonProgress[],
+    SavedWord[],
+    ExerciseResult[],
+  ] = await Promise.all([
+    db?.getAll(stores.activities) ?? [],
+    readLessonProgress(),
+    db?.getAll(stores.vocab) ?? [],
+    db?.getAll(stores.results) ?? [],
+  ]);
+  const newestFirst = (a: { at: string }, b: { at: string }) =>
+    b.at.localeCompare(a.at);
+  return {
+    activities: activities.sort(newestFirst),
+    lessons,
+    vocab,
+    results: results.sort(newestFirst),
+  };
+}
