@@ -1,3 +1,4 @@
+import { Landing } from "./pages/Landing";
 import { Guide } from "./pages/Guide";
 import { Help } from "./pages/Help";
 import { NotFound } from "./pages/NotFound";
@@ -7,6 +8,7 @@ import { navItems, type Destination } from "./components/navigation";
 import { Placeholder } from "./pages/Placeholder";
 
 export const router = createBrowserRouter([
+  { path: "/", element: <Landing /> },
   { path: "/guides/:slug", element: <Guide /> },
   {
     element: (
@@ -15,7 +17,6 @@ export const router = createBrowserRouter([
       </main>
     ),
     children: [
-      { path: "/", element: <Placeholder title="Englishy" /> },
       { path: "/start", element: <Placeholder title="Onboarding" /> },
       { path: "/placement", element: <Placeholder title="Placement" /> },
     ],

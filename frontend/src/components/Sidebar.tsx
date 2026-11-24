@@ -1,3 +1,4 @@
+import { ThemeToggle } from "./ThemeToggle";
 import { learnerDatabase } from "../lib/storage-keys";
 import { useEffect, useId, useRef, useState } from "react";
 import {
@@ -9,12 +10,9 @@ import {
 } from "react-router";
 import {
   ChevronsUpDown,
-  Monitor,
-  Moon,
   PanelLeftClose,
   PanelLeftOpen,
   SquarePen,
-  Sun,
   X,
 } from "lucide-react";
 import { BRAND } from "../../../shared/brand";
@@ -165,36 +163,6 @@ function RecentChats({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </ul>
     </nav>
-  );
-}
-
-function ThemeToggle() {
-  const t = useTranslate(),
-    { prefs, update } = usePreferences();
-  return (
-    <div
-      role="radiogroup"
-      aria-label={t("theme.label")}
-      className="inline-flex gap-0.5 rounded-full bg-surface-2 p-1"
-    >
-      {(["light", "dark", "system"] as const).map((theme) => {
-        const Icon = { light: Sun, dark: Moon, system: Monitor }[theme];
-        return (
-          <button
-            type="button"
-            role="radio"
-            key={theme}
-            aria-label={t(`theme.${theme}`)}
-            title={t(`theme.${theme}`)}
-            aria-checked={prefs.theme === theme}
-            onClick={() => void update({ theme })}
-            className="inline-flex h-8 items-center justify-center rounded-full px-2.5 text-muted aria-checked:bg-raised aria-checked:text-text aria-checked:shadow-sm"
-          >
-            <Icon aria-hidden="true" className="size-4" />
-          </button>
-        );
-      })}
-    </div>
   );
 }
 
