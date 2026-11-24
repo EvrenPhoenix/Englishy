@@ -1,3 +1,4 @@
+import { LearnPage } from "./pages/LearnPage";
 import { GrammarPage } from "./pages/GrammarPage";
 import { Landing } from "./pages/Landing";
 import { Guide } from "./pages/Guide";
@@ -9,6 +10,7 @@ import { navItems, type Destination } from "./components/navigation";
 import { Placeholder } from "./pages/Placeholder";
 
 const pages: Partial<Record<Destination, React.ReactElement>> = {
+  learn: <LearnPage />,
   grammar: <GrammarPage />,
   help: <Help />,
 };

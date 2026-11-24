@@ -67,3 +67,12 @@ export function EmptyState({
     </div>
   );
 }
+export function Card({
+  className,
+  children,
+}: {
+  className: string;
+  children: ReactNode;
+}) {
+  return <div className={classes("card", className)}>{children}</div>;
+}

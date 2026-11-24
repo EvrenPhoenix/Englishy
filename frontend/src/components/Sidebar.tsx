@@ -1,3 +1,4 @@
+import { useStoredValue } from "../lib/use-stored-value";
 import { ThemeToggle } from "./ThemeToggle";
 import { learnerDatabase } from "../lib/storage-keys";
 import { useEffect, useId, useRef, useState } from "react";
@@ -18,7 +19,7 @@ import {
 import { BRAND } from "../../../shared/brand";
 import { LEVEL_LABELS } from "../../../shared/constants";
 import { useTranslate } from "../i18n/provider";
-import { minutesToday, recentTutorChats, subscribe } from "../lib/database";
+import { minutesToday, recentTutorChats } from "../lib/database";
 import { Brand } from "./Brand";
 import { usePreferences } from "./PreferencesProvider";
 import {
@@ -28,25 +29,6 @@ import {
   navItems,
   type Destination,
 } from "./navigation";
-
-function useStoredValue<T>(store: string, read: () => Promise<T>, initial: T) {
-  const [value, setValue] = useState(initial);
-  useEffect(() => {
-    let revision = 0;
-    async function refresh() {
-      const current = ++revision;
-      const next = await read();
-      if (revision === current) setValue(next);
-    }
-    void refresh();
-    const unsubscribe = subscribe(store, refresh);
-    return () => {
-      revision++;
-      unsubscribe();
-    };
-  }, [read, store]);
-  return value;
-}
 
 export function NewChat({
   compact = false,
