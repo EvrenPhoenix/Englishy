@@ -1,3 +1,4 @@
+import { Help } from "./pages/Help";
 import { NotFound } from "./pages/NotFound";
 import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import { AppShell } from "./components/AppShell";
@@ -23,7 +24,8 @@ export const router = createBrowserRouter([
     children: [
       ...(Object.keys(navItems) as Destination[]).map((id) => ({
         path: `/${id}`,
-        element: <Placeholder message={`nav.${id}`} />,
+        element:
+          id === "help" ? <Help /> : <Placeholder message={`nav.${id}`} />,
       })),
       { path: "/learn/:lessonId", element: <Placeholder title="Lesson" /> },
       {
