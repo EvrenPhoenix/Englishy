@@ -34,4 +34,7 @@ function earlyTheme(): Plugin {
   };
 }
 
-export default defineConfig({ plugins: [react(), tailwind(), earlyTheme()] });
+export default defineConfig({
+  plugins: [react(), tailwind(), earlyTheme()],
+  server: { proxy: { "/api": "http://127.0.0.1:8787" } },
+});
