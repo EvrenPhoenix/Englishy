@@ -1,3 +1,4 @@
+import { GrammarPage } from "./pages/GrammarPage";
 import { Landing } from "./pages/Landing";
 import { Guide } from "./pages/Guide";
 import { Help } from "./pages/Help";
@@ -6,6 +7,11 @@ import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import { AppShell } from "./components/AppShell";
 import { navItems, type Destination } from "./components/navigation";
 import { Placeholder } from "./pages/Placeholder";
+
+const pages: Partial<Record<Destination, React.ReactElement>> = {
+  grammar: <GrammarPage />,
+  help: <Help />,
+};
 
 export const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
@@ -26,8 +32,7 @@ export const router = createBrowserRouter([
     children: [
       ...(Object.keys(navItems) as Destination[]).map((id) => ({
         path: `/${id}`,
-        element:
-          id === "help" ? <Help /> : <Placeholder message={`nav.${id}`} />,
+        element: pages[id] ?? <Placeholder message={`nav.${id}`} />,
       })),
       { path: "/learn/:lessonId", element: <Placeholder title="Lesson" /> },
       {
