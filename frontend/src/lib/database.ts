@@ -135,3 +135,12 @@ export async function minutesToday() {
     rows.reduce((seconds, row) => seconds + row.durationSec, 0) / 60,
   );
 }
+export interface LessonProgress {
+  lessonId: string;
+  status: string;
+  bestScore: number;
+  completedAt?: string | null;
+}
+export async function readLessonProgress(): Promise<LessonProgress[]> {
+  return (await (await database)?.getAll(stores.lessons)) ?? [];
+}
