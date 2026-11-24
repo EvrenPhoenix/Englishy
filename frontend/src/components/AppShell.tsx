@@ -2,7 +2,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { Menu, RefreshCw, WifiOff } from "lucide-react";
-import { Button } from "./FormControls";
+import { Button } from "./ui";
 import { applyUpdate, onUpdateReady } from "../lib/service-worker";
 import { BRAND } from "../../../shared/brand";
 import { useTranslate } from "../i18n/provider";

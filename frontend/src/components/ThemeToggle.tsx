@@ -1,7 +1,7 @@
 import { Sun, Moon, Monitor } from "lucide-react";
 import { useTranslate } from "../i18n/provider";
 import { usePreferences } from "./PreferencesProvider";
-import { Segmented } from "./Controls";
+import { Segmented } from "./ui";
 
 const icons = { light: Sun, dark: Moon, system: Monitor };
 

@@ -9,11 +9,13 @@ Englishy is an English-learning web app for absolute beginners through A1. It of
 - `shared/` contains the brand, constants, scenarios and validation schemas used by both the Worker and the frontend.
 - `deploy/embedded-worker.ts` is the Worker entry point. It passes `/api/*` requests to `worker/index.ts`. It also serves the embedded browser files with their content types and caching headers, and uses the app shell for routes such as `/learn`.
 - `scripts/build-embedded.mjs` packages `frontend/dist` into the ignored `dist/embedded/assets.js` module. `npm run build` at the root builds the frontend and then runs this script, and Wrangler runs `npm run build` for development and deployment.
-- `frontend-compiled/` is the compiled release recovered from the live site before the rebuild. It is no longer deployed. It is kept as the reference for parity checks: `FRONTEND_DIR=frontend-compiled node scripts/build-embedded.mjs` embeds it instead.
+- `frontend-compiled/` is the compiled release recovered from the live site before the rebuild. It is no longer deployed. It is kept as the reference for parity checks and course-content checks: `FRONTEND_DIR=frontend-compiled node scripts/build-embedded.mjs` embeds it instead. The `archive/original-release` branch keeps the repository as it was before the rebuild.
+
+Inside `frontend/src`: `pages/` holds one file (or folder, for larger pages) per route, `components/ui/` the shared buttons, fields, notices, dialogs and badges, `components/` the app shell, chat, exercise and speech components, `lib/` storage, AI, speech and progress logic, `data/` the course content, and `i18n/` the translations.
 
 ## Local development
 
-Use Node.js 22 or newer and npm from the repository root.
+Use Node.js 22 or newer (see `.nvmrc`) and npm from the repository root.
 
 ```sh
 npm install          # also installs frontend/ dependencies
@@ -34,7 +36,7 @@ npm --prefix frontend run test:merge      # backup merge unit tests
 npx wrangler deploy --dry-run
 ```
 
-The dry run bundles the Worker and frontend locally. For an authorised Cloudflare release, sign in to the account that owns the `englishy` Worker, configure the NVIDIA key as a Worker secret, and run `npm run deploy`. To set or rotate the secret, use `npx wrangler secret put NVIDIA_API_KEY` and enter the value interactively. That command can create and deploy a new Worker version, so run it only when a production change is intended.
+GitHub Actions runs these checks (and the dry run) on every pull request and push to `main` (`.github/workflows/ci.yml`). The dry run bundles the Worker and frontend locally. For an authorised Cloudflare release, sign in to the account that owns the `englishy` Worker, configure the NVIDIA key as a Worker secret, and run `npm run deploy`. To set or rotate the secret, use `npx wrangler secret put NVIDIA_API_KEY` and enter the value interactively. That command can create and deploy a new Worker version, so run it only when a production change is intended.
 
 ### Parity checks against the recovered release
 

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useTranslate } from "../i18n/provider";
-import { classes } from "./PageElements";
+import { classes } from "./ui";
 export function TutorMark({
   className = "size-8",
   pulse,

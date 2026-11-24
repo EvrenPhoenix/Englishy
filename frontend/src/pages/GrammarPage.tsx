@@ -5,12 +5,7 @@ import { useTranslate } from "../i18n/provider";
 import { Search } from "lucide-react";
 import { LEVEL_LABELS } from "../../../shared/constants";
 import { grammar } from "../data/grammar";
-import {
-  classes,
-  PageHeader,
-  EmptyState,
-  Badge,
-} from "../components/PageElements";
+import { classes, PageHeader, EmptyState, Badge } from "../components/ui";
 const categories = [
   "All",
   "Words",

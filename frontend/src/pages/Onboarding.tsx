@@ -30,8 +30,7 @@ import { usePreferences } from "../components/PreferencesProvider";
 import { ProgressBar } from "../components/ProgressIndicators";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { Brand } from "../components/Brand";
-import { classes } from "../components/PageElements";
-import { Button, ChoiceCard } from "../components/FormControls";
+import { classes, Button, ChoiceCard } from "../components/ui";
 const steps = [
   "interface",
   "native",

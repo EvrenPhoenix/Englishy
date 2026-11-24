@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Mic, Square, Volume2 } from "lucide-react";
 import { BRAND } from "../../../shared/brand";
-import { Button } from "./FormControls";
-import { Dialog } from "./Controls";
-import { classes } from "./PageElements";
+import { Button, Dialog, classes } from "./ui";
 import { usePreferences } from "./PreferencesProvider";
 import {
   hasMicConsent,

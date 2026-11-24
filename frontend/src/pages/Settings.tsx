@@ -14,15 +14,17 @@ import { BRAND } from "../../../shared/brand";
 import { useTranslate, type MessageKey } from "../i18n/provider";
 import { usePreferences } from "../components/PreferencesProvider";
 import { usePageMeta } from "../lib/use-page-meta";
-import { PageHeader, classes } from "../components/PageElements";
-import { Button, ChoiceCard } from "../components/FormControls";
 import {
+  PageHeader,
+  classes,
+  Button,
+  ChoiceCard,
   Dialog,
   Notice,
   Segmented,
   SelectField,
   SwitchRow,
-} from "../components/Controls";
+} from "../components/ui";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { ListenButton } from "../components/SpeechControls";
 import { englishVoices, speechSupported } from "../lib/speech";
