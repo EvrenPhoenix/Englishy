@@ -52,3 +52,33 @@ export function writeString<
     /* Storage may be disabled. */
   }
 }
+
+// Existing learners depend on this exact IndexedDB schema. Do not change these names,
+// version numbers, key paths, or indexes. Version 2 already exists in the compiled app.
+export const learnerDatabase = {
+  name: "linguanest",
+  version: 2,
+  initialVersion: 1,
+  prefsKey: "prefs",
+  stores: {
+    kv: "kv",
+    lessons: "lessons",
+    activities: "activities",
+    vocab: "vocab",
+    conversations: "conversations",
+    results: "results",
+  },
+  keyPaths: {
+    kv: null,
+    lessons: "lessonId",
+    activities: "id",
+    vocab: "id",
+    conversations: "id",
+    results: "id",
+  },
+  indexes: {
+    activities: { day: ["by-day", "day"], type: ["by-type", "type"] },
+    vocab: { due: ["by-due", "srs.due"] },
+    results: { lesson: ["by-lesson", "lessonId"], at: ["by-at", "at"] },
+  },
+} as const;
