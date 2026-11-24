@@ -150,6 +150,10 @@ export async function readLessonProgress(): Promise<LessonProgress[]> {
   return (await (await database)?.getAll(stores.lessons)) ?? [];
 }
 export interface Activity {
+  id: string;
+  title: string;
+  total?: number;
+  correct?: number;
   day: string;
   at: string;
   type: string;
@@ -157,7 +161,7 @@ export interface Activity {
   xp: number;
 }
 export interface SavedWord {
-  srs: { lastReviewed: string | null; interval: number };
+  srs: { due: string; lastReviewed: string | null; interval: number };
 }
 export interface ExerciseResult {
   at: string;

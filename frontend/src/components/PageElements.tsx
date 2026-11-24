@@ -28,10 +28,12 @@ const badgeTones = {
   neutral: "bg-surface-2 text-muted",
 };
 export function Badge({
+  icon: Icon,
   tone = "neutral",
   className,
   children,
 }: {
+  icon?: LucideIcon;
   tone?: keyof typeof badgeTones;
   className?: string;
   children: ReactNode;
@@ -44,6 +46,7 @@ export function Badge({
         className,
       )}
     >
+      {Icon && <Icon aria-hidden className="size-3.5" />}
       {children}
     </span>
   );
