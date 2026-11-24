@@ -113,7 +113,11 @@ export function AppShell() {
           >
             <Menu className="size-5.5" />
           </button>
-          <Link to="/home" aria-label={`${BRAND.name}, ${t("nav.home")}`}>
+          <Link
+            to="/home"
+            className="inline-flex items-center rounded-lg"
+            aria-label={`${BRAND.name}, ${t("nav.home")}`}
+          >
             <Brand small />
           </Link>
           <NewChat header />

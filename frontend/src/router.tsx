@@ -1,3 +1,4 @@
+import { NotFound } from "./pages/NotFound";
 import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import { AppShell } from "./components/AppShell";
 import { navItems, type Destination } from "./components/navigation";
@@ -35,7 +36,7 @@ export const router = createBrowserRouter([
       },
       { path: "/practice", element: <Navigate replace to="/practise" /> },
       { path: "/privacy", element: <Navigate replace to="/help#privacy" /> },
-      { path: "*", element: <Placeholder title="Page not found" /> },
+      { path: "*", element: <NotFound /> },
     ],
   },
 ]);

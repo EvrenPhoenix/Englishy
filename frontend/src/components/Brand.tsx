@@ -5,7 +5,7 @@ export function Brand({ small = false }: { small?: boolean }) {
   const gradient = useId();
   return (
     <span
-      className={`inline-flex items-center font-semibold tracking-tight ${small ? "gap-2" : "gap-2.5 text-lg"}`}
+      className={`inline-flex items-center font-semibold tracking-tight ${small ? "gap-2" : "gap-2.5"}`}
     >
       <svg
         aria-hidden="true"
@@ -43,7 +43,7 @@ export function Brand({ small = false }: { small?: boolean }) {
           />
         ))}
       </svg>
-      {BRAND.name}
+      <span className={small ? undefined : "text-lg"}>{BRAND.name}</span>
     </span>
   );
 }
