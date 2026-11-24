@@ -21,6 +21,9 @@ const ProgressPage = lazy(async () => ({
 const GrammarPage = lazy(async () => ({
   default: (await import("./pages/GrammarPage")).GrammarPage,
 }));
+const Settings = lazy(async () => ({
+  default: (await import("./pages/Settings")).Settings,
+}));
 const ConversationList = lazy(async () => ({
   default: (await import("./pages/ConversationList")).ConversationList,
 }));
@@ -32,6 +35,7 @@ const pages: Partial<Record<Destination, React.ReactElement>> = {
   learn: <LearnPage />,
   grammar: <GrammarPage />,
   help: <Help />,
+  settings: <Settings />,
 };
 
 export const router = createBrowserRouter([

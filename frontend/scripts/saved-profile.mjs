@@ -13,6 +13,20 @@ export async function seedSavedProfile(
       (db) => db.name === "linguanest" && db.version === 2,
     ),
   );
+  // The listing can report version 2 before the upgrade commits. Opening without a
+  // version waits for it, so leave the page only once all six stores exist.
+  await page.waitForFunction(
+    () =>
+      new Promise((ok) => {
+        const r = indexedDB.open("linguanest");
+        r.onsuccess = () => {
+          const n = r.result.objectStoreNames.length;
+          r.result.close();
+          ok(n === 6);
+        };
+        r.onerror = () => ok(false);
+      }),
+  );
   await page.route("**/__fixture_setup__", (r) =>
     r.fulfill({
       contentType: "text/html",
