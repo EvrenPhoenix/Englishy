@@ -1,3 +1,4 @@
+import { Onboarding } from "./pages/Onboarding";
 import { lazy } from "react";
 import { Landing } from "./pages/Landing";
 import { Guide } from "./pages/Guide";
@@ -37,13 +38,9 @@ export const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
   { path: "/guides/:slug", element: <Guide /> },
   {
-    element: (
-      <main id="main">
-        <Outlet />
-      </main>
-    ),
+    element: <Outlet />,
     children: [
-      { path: "/start", element: <Placeholder title="Onboarding" /> },
+      { path: "/start", element: <Onboarding /> },
       { path: "/placement", element: <Placeholder title="Placement" /> },
     ],
   },
