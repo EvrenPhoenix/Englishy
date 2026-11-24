@@ -128,6 +128,7 @@ export function revisionTopics(rows: ExerciseResult[], now = new Date()) {
     .map(([lessonId, score]) => ({
       lessonId,
       accuracy: score.correct / score.attempts,
+      attempts: score.attempts,
       title:
         lessons.find((lesson) => lesson.id === lessonId)?.title ??
         (lessonId.startsWith("grammar:")

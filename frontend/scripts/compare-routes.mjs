@@ -754,6 +754,130 @@ Object.assign(pages, {
   },
 });
 
+// Results that make one lesson a revision topic and leave open mistakes.
+const practiseResults = async (p) => {
+  await p.evaluate(async () => {
+    const db = await new Promise((ok) => {
+      const r = indexedDB.open("linguanest");
+      r.onsuccess = () => ok(r.result);
+    });
+    const tx = db.transaction(["results", "lessons"], "readwrite");
+    const results = tx.objectStore("results");
+    const rows = [
+      ["pa1-alphabet:2", false],
+      ["pa1-alphabet:3", false],
+      ["pa1-alphabet:4", true],
+      ["pa1-alphabet:5", false],
+      ["g-articles:1", false],
+      ["g-articles:2", false],
+      ["g-articles:3", true],
+    ];
+    rows.forEach(([exerciseId, correct], i) =>
+      results.put({
+        id: "p" + i,
+        at: "2026-11-24T09:0" + i + ":00.000Z",
+        lessonId: exerciseId.startsWith("g-")
+          ? "grammar:articles"
+          : "pa1-alphabet",
+        exerciseId,
+        skill: "review",
+        correct,
+      }),
+    );
+    await new Promise((ok) => (tx.oncomplete = ok));
+    db.close();
+  });
+};
+const exercisesReply = {
+  json: {
+    exercises: [
+      {
+        question: "Choose the past of 'go'.",
+        options: ["goed", "went", "gone"],
+        answerIndex: 1,
+        explanation: "Go is irregular: went.",
+      },
+      {
+        question: "Choose the past of 'eat'.",
+        options: ["ate", "eated"],
+        answerIndex: 0,
+        explanation: "Eat becomes ate.",
+      },
+      {
+        question: "Bad index",
+        options: ["a", "b"],
+        answerIndex: 3,
+        explanation: "Dropped.",
+      },
+    ],
+  },
+};
+Object.assign(pages, {
+  Practise: { path: "/practise", ready: h1 },
+  "Practise-with-results": {
+    path: "/practise",
+    ready: h1,
+    seed: practiseResults,
+  },
+  "Practise-mistakes": {
+    path: "/practise",
+    ready: h1,
+    seed: practiseResults,
+    act: (p) =>
+      p.locator("main .md\\:grid-cols-2 .card button").first().click(),
+  },
+  "Practise-mixed": {
+    path: "/practise",
+    ready: h1,
+    act: (p) => p.locator("main .md\\:grid-cols-2 .card button").nth(1).click(),
+  },
+  "Practise-ai": {
+    path: "/practise",
+    ready: h1,
+    api: { exercises: exercisesReply },
+    act: async (p) => {
+      await p.locator("main form input").fill("past simple irregular verbs");
+      await p.locator("main form button").click();
+      await p.locator("main [role=status]").first().waitFor();
+    },
+  },
+  "Practise-ai-invalid": {
+    path: "/practise",
+    ready: h1,
+    api: { exercises: { json: { exercises: [] } } },
+    act: async (p) => {
+      await p.locator("main form input").fill("kitchen words");
+      await p.locator("main form button").click();
+      await p.locator("main p.text-danger").waitFor();
+    },
+  },
+  "Practise-offline": {
+    path: "/practise",
+    ready: h1,
+    act: async (p) => {
+      await p.context().setOffline(true);
+      await p.evaluate(() => window.dispatchEvent(new Event("offline")));
+      await p.locator("main form + div a, main .mt-3 > a").first().waitFor();
+    },
+  },
+  "Practise-mistakes-done": {
+    path: "/practise",
+    ready: h1,
+    seed: practiseResults,
+    act: async (p) => {
+      await p.locator("main .md\\:grid-cols-2 .card button").first().click();
+      for (let i = 0; i < 12; i++) {
+        const done = await p
+          .locator("main .card .text-lg.font-semibold")
+          .count();
+        if (done) break;
+        await p.locator("main .card .border-t button").click();
+      }
+      await p.locator("main .card .text-lg.font-semibold").waitFor();
+    },
+  },
+});
+
 const grammarIds = [
   "parts-of-speech",
   "nouns",

@@ -130,7 +130,7 @@ export function AppShell() {
                 role="status"
                 className="flex max-w-2xl items-center gap-2 rounded-full bg-warning-soft px-4 py-2 text-sm"
               >
-                <WifiOff className="size-4 text-warning" />
+                <WifiOff className="size-4 shrink-0 text-warning" aria-hidden />
                 {t("app.offline")}
               </div>
             )}
