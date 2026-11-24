@@ -7,7 +7,12 @@ export type Exercise = { id: string; explanation?: string; hint?: string } & (
   | ({ type: "mc" } & Choice)
   | ({ type: "listen"; audio: string } & Choice)
   | ({ type: "reading"; passage: string; title?: string } & Choice)
-  | { type: "blank"; prompt: string; answers: string[] }
+  | {
+      type: "blank";
+      prompt: string;
+      answers: string[];
+      strictSpelling?: boolean;
+    }
   | { type: "order"; words: string[]; alternatives?: string[] }
   | { type: "match"; pairs: [string, string][]; prompt?: string }
   | {
@@ -16,7 +21,13 @@ export type Exercise = { id: string; explanation?: string; hint?: string } & (
       fallback: string;
       answers: string[];
     }
-  | { type: "spot"; sentence: string; wrongIndex: number; correction: string }
+  | {
+      type: "spot";
+      sentence: string;
+      wrongIndex: number;
+      correction: string;
+      prompt?: string;
+    }
   | {
       type: "correct";
       sentence: string;

@@ -158,6 +158,8 @@ for (const name of names) {
         `${neu.errors.length ? " ERR:" + neu.errors.join("|").slice(0, 200) : ""}` +
         `${ref.errors.length ? " REFERR:" + ref.errors.join("|").slice(0, 200) : ""}`,
     );
+    if (!ok && process.env.SHOW_API)
+      console.log("  api", JSON.stringify(neu.api).slice(0, 800));
     if (!sameApi)
       console.log(
         "  ref api",

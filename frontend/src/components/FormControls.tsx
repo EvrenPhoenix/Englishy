@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, Ref } from "react";
 import type { LucideIcon } from "lucide-react";
 import { classes } from "./PageElements";
 const tones = {
@@ -16,6 +16,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: "sm" | "md" | "lg";
   icon?: LucideIcon;
   iconEnd?: LucideIcon;
+  ref?: Ref<HTMLButtonElement>;
 };
 export function Button({
   variant = "primary",

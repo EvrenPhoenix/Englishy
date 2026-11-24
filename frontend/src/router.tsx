@@ -1,4 +1,5 @@
 import { Onboarding } from "./pages/Onboarding";
+import { PlacementPage } from "./pages/PlacementPage";
 import { lazy } from "react";
 import { Landing } from "./pages/Landing";
 import { Guide } from "./pages/Guide";
@@ -45,7 +46,7 @@ export const router = createBrowserRouter([
     element: <Outlet />,
     children: [
       { path: "/start", element: <Onboarding /> },
-      { path: "/placement", element: <Placeholder title="Placement" /> },
+      { path: "/placement", element: <PlacementPage /> },
     ],
   },
   {

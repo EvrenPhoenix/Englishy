@@ -34,6 +34,54 @@ const upload = (p, body) =>
     buffer: Buffer.from(body),
   });
 
+// Placement helpers use structure rather than text so Arabic captures work too.
+const placementStart = (p) => p.locator("main button").first().click();
+const answers = 'main [role=radiogroup]:not([aria-label="Playback speed"])';
+const pick = (p, n) =>
+  p
+    .locator(answers + " button")
+    .nth(n)
+    .click();
+const check = (p) => p.locator(answers + " + button").click();
+const next = (p) =>
+  p.locator('main [aria-live=polite] button[class*="min-w-40"]').click();
+const answerMc = async (p, n) => {
+  await pick(p, n);
+  await check(p);
+  await next(p);
+};
+const writingFeedback = {
+  json: {
+    summary: "Clear and friendly. A few small grammar slips.",
+    strengths: ["Good sentence variety", "Clear plans"],
+    corrected:
+      "I am Ana. I live in Lisbon and I want to study nursing next year.",
+    issues: [
+      {
+        original: "I living",
+        suggestion: "I live",
+        category: "grammar",
+        explanation: "Use the present simple for facts.",
+        optional: false,
+      },
+      {
+        original: "want study",
+        suggestion: "want to study",
+        category: "grammar",
+        explanation: "Want is followed by to + verb.",
+        optional: false,
+      },
+      {
+        original: "next year",
+        suggestion: "in the coming year",
+        category: "style",
+        explanation: "Optional alternative.",
+        optional: true,
+      },
+    ],
+  },
+};
+
 export const pages = {
   NotFound: {
     path: "/no-such-page",
@@ -105,6 +153,94 @@ export const pages = {
     act: async (p) => {
       await p.locator('main button[class*="-ms-3"]').click();
       await p.locator("dialog[open]").waitFor();
+    },
+  },
+  Placement: { path: "/placement", ready: (p) => p.locator("h1").waitFor() },
+  "Placement-question": {
+    path: "/placement",
+    ready: (p) => p.locator("h1").waitFor(),
+    act: placementStart,
+  },
+  "Placement-correct": {
+    path: "/placement",
+    ready: (p) => p.locator("h1").waitFor(),
+    act: async (p) => {
+      await placementStart(p);
+      await pick(p, 0);
+      await check(p);
+    },
+  },
+  "Placement-wrong": {
+    path: "/placement",
+    ready: (p) => p.locator("h1").waitFor(),
+    api: { explain: { sse: ["When you meet ", "someone, say Hello."] } },
+    act: async (p) => {
+      await placementStart(p);
+      await pick(p, 1);
+      await check(p);
+      await p.locator("main [aria-live=polite] .mt-2 button").click();
+      await p.locator("main [aria-live=polite] .whitespace-pre-wrap").waitFor();
+    },
+  },
+  "Placement-listen": {
+    path: "/placement",
+    ready: (p) => p.locator("h1").waitFor(),
+    act: async (p) => {
+      await placementStart(p);
+      await answerMc(p, 0);
+      await answerMc(p, 1);
+      await answerMc(p, 0);
+      await p
+        .locator('main [role=radiogroup][aria-label="Playback speed"]')
+        .waitFor();
+    },
+  },
+  "Placement-stage2": {
+    path: "/placement",
+    ready: (p) => p.locator("h1").waitFor(),
+    act: async (p) => {
+      await placementStart(p);
+      for (const n of [0, 1, 0, 0, 1, 0, 0]) await answerMc(p, n);
+    },
+  },
+  "Placement-result": {
+    path: "/placement",
+    ready: (p) => p.locator("h1").waitFor(),
+    act: async (p) => {
+      await placementStart(p);
+      for (const n of [0, 1, 0, 0, 1, 0]) await answerMc(p, n);
+      await p.locator("header button").click();
+      await p.locator("main textarea").waitFor();
+    },
+  },
+  "Placement-feedback": {
+    path: "/placement",
+    ready: (p) => p.locator("h1").waitFor(),
+    api: { writing: writingFeedback },
+    act: async (p) => {
+      await placementStart(p);
+      await answerMc(p, 2);
+      await p.locator("header button").click();
+      await p
+        .locator("main textarea")
+        .fill(
+          "I am Ana and I living in Lisbon. I want study nursing next year.",
+        );
+      await p.locator("main textarea + button").click();
+      await p.locator("main .rounded-xl.bg-surface-2").waitFor();
+    },
+  },
+  // Data-only flow: finish placement and save the chosen level.
+  "Placement-save": {
+    path: "/placement",
+    ready: (p) => p.locator("h1").waitFor(),
+    act: async (p) => {
+      await placementStart(p);
+      for (const n of [0, 1, 0, 0, 1, 0, 0]) await answerMc(p, n);
+      await p.locator("header button").click();
+      await p.locator("main select").selectOption("a2");
+      await p.locator("main .card:has(select) > button").click();
+      await p.waitForURL(/\/home$/);
     },
   },
 };

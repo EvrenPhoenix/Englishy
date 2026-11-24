@@ -188,13 +188,11 @@ async function run(browser, base, name) {
   await page.locator("main h1").waitFor();
   const s = scenarios[name];
   if (s.file)
-    await page
-      .locator('input[type="file"]')
-      .setInputFiles({
-        name: "b.json",
-        mimeType: "application/json",
-        buffer: Buffer.from(s.file),
-      });
+    await page.locator('input[type="file"]').setInputFiles({
+      name: "b.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(s.file),
+    });
   await s.run(page);
   const snap = await snapshotProfile(page);
   await ctx.close();
