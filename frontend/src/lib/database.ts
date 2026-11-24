@@ -186,6 +186,7 @@ export interface SavedWord {
 export interface ExerciseResult {
   at: string;
   lessonId: string;
+  exerciseId: string;
   correct: boolean;
 }
 export const progressStores = [
