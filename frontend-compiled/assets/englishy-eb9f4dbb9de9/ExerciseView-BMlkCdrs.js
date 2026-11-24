@@ -1,0 +1,1125 @@
+import { t as e } from "./check-CbqMqHGm.js";
+import {
+  I as t,
+  R as n,
+  T as r,
+  b as i,
+  i as a,
+  w as o,
+  y as s,
+} from "./brand-29nU70PD.js";
+import { t as c } from "./lightbulb-CFQn7oSA.js";
+import { t as l } from "./rotate-ccw-Bh2IGEpt.js";
+import { F as u, P as d, at as f } from "./index-CJhEbyla.js";
+import { r as p } from "./i18n-DBb69MOl.js";
+import { n as m, r as h, t as g } from "./ai-BFDFHR9h.js";
+import { n as _, r as v, t as y } from "./SpeechControls-_rI90RG2.js";
+import { l as b } from "./speech-Bj06CoGr.js";
+import { a as x, i as S, n as C, r as w, t as T } from "./validate-DkSKaKxp.js";
+var E = {
+  name: `circle-x`,
+  size: 24,
+  node: [
+    [`circle`, { cx: `12`, cy: `12`, r: `10`, key: `1mglay` }],
+    [`path`, { d: `m15 9-6 6`, key: `1uzhvr` }],
+    [`path`, { d: `m9 9 6 6`, key: `z0biqf` }],
+  ],
+  aliases: [`x-circle`],
+};
+E.node;
+var D = r(E),
+  O = n(t(), 1),
+  k = i(),
+  A = {
+    mc: `Choose the correct answer.`,
+    blank: `Fill in the gap.`,
+    order: `Put the words in the correct order.`,
+    match: `Match the pairs.`,
+    translate: `Write it in English.`,
+    spot: `Find the word that is wrong.`,
+    correct: `Correct the sentence.`,
+    recall: `Write the word.`,
+    listen: `Listen and choose.`,
+    dictation: `Listen and write what you hear.`,
+    reading: `Read and answer.`,
+    write: `Write your answer.`,
+    speak: `Listen, then say it aloud.`,
+  };
+function j(e) {
+  switch (e.type) {
+    case `mc`:
+    case `listen`:
+    case `reading`:
+      return e.options[e.answer];
+    case `blank`:
+    case `recall`:
+    case `translate`:
+    case `dictation`:
+    case `correct`:
+      return e.answers[0];
+    case `order`:
+      return e.words.join(` `).replace(/ ([,.?!])/g, `$1`);
+    case `spot`:
+      return e.correction;
+    case `match`:
+      return e.pairs.map((e) => `${e[0]} → ${e[1]}`).join(`, `);
+    case `write`:
+      return e.sample ?? ``;
+    case `speak`:
+      return e.text;
+  }
+}
+function M({
+  exercise: t,
+  savedAnswer,
+  onAnswered: n,
+  onContinue: r,
+  onSkip: i,
+  isLast: o,
+}) {
+  let s = p(),
+    [u, d] = (0, O.useState)(savedAnswer ? (savedAnswer.correct ? `correct` : `incorrect`) : `answering`),
+    [f, m] = (0, O.useState)(!1),
+    [h, g] = (0, O.useState)(!1),
+    [_, v] = (0, O.useState)(0),
+    [y, b] = (0, O.useState)(!1),
+    x = (0, O.useRef)(Boolean(savedAnswer)),
+    audioFallback = (0, O.useRef)(false),
+    [unscored, setUnscored] = (0, O.useState)(Boolean(savedAnswer?.deviceSkip)),
+    S = (0, O.useRef)(null),
+    C = (e, r, i) => {
+      const deviceSkip = audioFallback.current || Boolean(i?.deviceSkip);
+      setUnscored(deviceSkip);
+      (d(e ? `correct` : `incorrect`),
+        m(!1),
+        x.current ||
+          ((x.current = !0),
+          n({ correct: e, given: r, expected: j(t), ...i, deviceSkip })));
+    };
+  (0, O.useEffect)(() => {
+    u !== `answering` && S.current?.focus();
+  }, [u]);
+  let w = () => {
+      (d(`answering`), b(!0), v((e) => e + 1));
+    },
+    T = `prompt` in t && t.prompt ? t.prompt : null,
+    E = A[t.type],
+    D = u !== `answering`;
+  return (0, k.jsxs)(`div`, {
+    className: `animate-fade-up`,
+    children: [
+      (0, k.jsx)(`p`, {
+        className: `mb-1 text-sm font-medium text-muted`,
+        children: E,
+      }),
+      y &&
+        u === `answering` &&
+        (0, k.jsx)(`p`, {
+          className: `mb-2 text-xs text-muted`,
+          children: `Practice attempt: your first answer has already been recorded.`,
+        }),
+      (0, k.jsx)(
+        `div`,
+        {
+          children: (0, k.jsx)(P, {
+            exercise: t,
+            prompt: T,
+            answered: D,
+            onCheck: (e, t) => (e === `almost` ? m(!0) : C(e === `correct`, t)),
+            onFinish: C,
+            onAudioUnavailable: () => { audioFallback.current = true; },
+            savedAnswer: _ === 0 ? savedAnswer : undefined,
+            almost: f,
+            clearAlmost: () => m(!1),
+          }),
+        },
+        _,
+      ),
+      t.hint &&
+        !D &&
+        (0, k.jsx)(`div`, {
+          className: `mt-4`,
+          children: h
+            ? (0, k.jsxs)(`p`, {
+                className: `inline-flex items-start gap-2 rounded-2xl bg-accent-soft px-4 py-2.5 text-sm`,
+                children: [
+                  (0, k.jsx)(c, {
+                    className: `mt-0.5 size-4 shrink-0 text-accent`,
+                    "aria-hidden": !0,
+                  }),
+                  t.hint,
+                ],
+              })
+            : (0, k.jsx)(a, {
+                variant: `ghost`,
+                size: `sm`,
+                icon: c,
+                onClick: () => g(!0),
+                children: s(`lesson.hint`),
+              }),
+        }),
+      f &&
+        !D &&
+        (0, k.jsx)(`p`, {
+          className: `animate-pop mt-4 rounded-2xl bg-warning-soft px-4 py-2.5 text-sm font-medium`,
+          role: `status`,
+          children: s(`lesson.almost`),
+        }),
+      D &&
+        (0, k.jsx)(N, {
+          correct: u === `correct`,
+          unscored,
+          exercise: t,
+          children: (0, k.jsxs)(`div`, {
+            className: `mt-4 flex flex-wrap gap-2`,
+            children: [
+              (0, k.jsx)(a, {
+                ref: S,
+                size: `lg`,
+                className: `flex-1 sm:flex-none sm:min-w-40`,
+                onClick: r,
+                iconEnd: e,
+                children: s(o ? `common.done` : `common.continue`),
+              }),
+              u === `incorrect` &&
+                (0, k.jsx)(a, {
+                  variant: `secondary`,
+                  size: `lg`,
+                  icon: l,
+                  onClick: w,
+                  children: s(`lesson.tryAgain`),
+                }),
+            ],
+          }),
+        }),
+      !D &&
+        (0, k.jsx)(`div`, {
+          className: `mt-8 flex justify-center border-t border-border pt-4 sm:justify-start`,
+          children: (0, k.jsx)(a, {
+            variant: `ghost`,
+            size: `sm`,
+            onClick: () => i(audioFallback.current),
+            children: s(`lesson.skipQuestion`),
+          }),
+        }),
+    ],
+  });
+}
+function N({ correct: e, exercise: t, children: n, unscored }) {
+  let r = p(),
+    i = j(t),
+    c = d(),
+    [l, u] = (0, O.useState)(null),
+    [m, _] = (0, O.useState)(!1),
+    v = !e && t.type !== `write` && t.type !== `speak`;
+  return (0, k.jsxs)(`div`, {
+    className: s(
+      `animate-slide-up sticky bottom-3 z-20 mt-6 rounded-3xl p-5 shadow-raised ring-1`,
+      e ? `bg-success-soft ring-success/25` : `bg-danger-soft ring-danger/20`,
+    ),
+    role: `status`,
+    "aria-live": `polite`,
+    children: [
+      (0, k.jsxs)(`p`, {
+        className: s(
+          `flex items-center gap-2 text-lg font-semibold`,
+          e ? `text-success` : `text-danger`,
+        ),
+        children: [
+          e
+            ? (0, k.jsx)(o, { className: `size-6`, "aria-hidden": !0 })
+            : (0, k.jsx)(D, { className: `size-6`, "aria-hidden": !0 }),
+          r(e ? `lesson.correct` : `lesson.incorrect`),
+        ],
+      }),
+      unscored && (0, k.jsx)(`p`, {
+        className: `mt-1 text-sm text-muted`,
+        children: `Practice only. This question is left out of your score.`,
+      }),
+      v &&
+        (0, k.jsx)(`p`, {
+          className: `mt-1`,
+          children: r(`lesson.answer`, { answer: i }),
+        }),
+      t.explanation &&
+        (0, k.jsx)(`p`, {
+          className: `mt-1 text-sm text-text/85`,
+          children: t.explanation,
+        }),
+      !e &&
+        t.type !== `write` &&
+        t.type !== `speak` &&
+        (0, k.jsx)(`div`, {
+          className: `mt-2`,
+          children: l
+            ? (0, k.jsx)(`p`, {
+                className: `rounded-2xl bg-surface/70 p-3 text-sm whitespace-pre-wrap`,
+                children: l,
+              })
+            : (0, k.jsx)(a, {
+                variant: `ghost`,
+                size: `sm`,
+                icon: f,
+                onClick: async () => {
+                  _(!0);
+                  try {
+                    let e = ``;
+                    (await h(
+                      `/api/ai/explain`,
+                      {
+                        profile: c,
+                        topic: `answer`,
+                        subject:
+                          (`prompt` in t && t.prompt) ||
+                          (`sentence` in t && t.sentence) ||
+                          i,
+                        detail: `Expected answer: ${i}`,
+                      },
+                      (t, n) => {
+                        ((e = n), u(n));
+                      },
+                    ),
+                      e || u(`No explanation was returned. Please try again.`));
+                  } catch (e) {
+                    u(g(e));
+                  } finally {
+                    _(!1);
+                  }
+                },
+                disabled: m,
+                children: m ? `Asking the tutor…` : r(`lesson.explainAi`),
+              }),
+        }),
+      n,
+    ],
+  });
+}
+function P(e) {
+  let { exercise: t } = e;
+  switch (t.type) {
+    case `mc`:
+      return (0, k.jsx)(I, {
+        ...e,
+        question: t.prompt,
+        options: t.options,
+        answer: t.answer,
+      });
+    case `listen`:
+      return (0, k.jsx)(I, {
+        ...e,
+        question: t.prompt,
+        options: t.options,
+        answer: t.answer,
+        audio: t.audio,
+      });
+    case `reading`:
+      return (0, k.jsx)(I, {
+        ...e,
+        question: t.prompt,
+        options: t.options,
+        answer: t.answer,
+        passage: t.passage,
+        title: t.title,
+      });
+    case `blank`:
+      return (0, k.jsx)(L, {
+        ...e,
+        question: t.prompt,
+        accepted: t.answers,
+        strict: t.strictSpelling,
+      });
+    case `recall`:
+      return (0, k.jsx)(L, { ...e, question: t.clue, accepted: t.answers });
+    case `translate`:
+      return (0, k.jsx)(R, { ...e });
+    case `dictation`:
+      return (0, k.jsx)(L, {
+        ...e,
+        question: ``,
+        accepted: t.answers,
+        audio: t.audio,
+      });
+    case `correct`:
+      return (0, k.jsx)(L, {
+        ...e,
+        question: t.sentence,
+        accepted: t.answers,
+        prefill: t.sentence,
+        caseSensitive: t.caseSensitive,
+      });
+    case `order`:
+      return (0, k.jsx)(z, { ...e });
+    case `match`:
+      return (0, k.jsx)(B, { ...e });
+    case `spot`:
+      return (0, k.jsx)(V, { ...e });
+    case `write`:
+      return (0, k.jsx)(H, { ...e });
+    case `speak`:
+      return (0, k.jsx)(U, { ...e });
+  }
+}
+function F({ children: e }) {
+  return (0, k.jsx)(`p`, {
+    className: `text-xl leading-snug font-semibold tracking-tight text-balance sm:text-2xl`,
+    children: e,
+  });
+}
+function I({
+  question: e,
+  options: t,
+  answer: n,
+  audio: r,
+  passage: i,
+  title: c,
+  answered: l,
+  onFinish: u,
+  onAudioUnavailable,
+  savedAnswer,
+}) {
+  let d = p(),
+    [f, m] = (0, O.useState)(() => {
+      const index = t.indexOf(savedAnswer?.given);
+      return index < 0 ? null : index;
+    }),
+    h = (e = f) => e !== null && u(e === n, t[e]);
+  return (
+    (0, O.useEffect)(() => {
+      if (l) return;
+      let e = (e) => {
+        if (e.target?.tagName === `INPUT` || e.target?.tagName === `TEXTAREA`)
+          return;
+        let n = Number(e.key);
+        (n >= 1 && n <= t.length && m(n - 1),
+          e.key === `Enter` && f !== null && (e.preventDefault(), h()));
+      };
+      return (
+        window.addEventListener(`keydown`, e),
+        () => window.removeEventListener(`keydown`, e)
+      );
+    }),
+    (0, k.jsxs)(`div`, {
+      children: [
+        i &&
+          (0, k.jsxs)(`article`, {
+            className: `mb-5 rounded-2xl bg-surface-2 p-5 leading-relaxed`,
+            children: [
+              c &&
+                (0, k.jsx)(`h3`, {
+                  className: `mb-2 font-semibold`,
+                  children: c,
+                }),
+              i
+                .split(
+                  `
+`,
+                )
+                .map((e, t) =>
+                  (0, k.jsx)(
+                    `p`,
+                    { className: t ? `mt-2` : ``, children: e },
+                    t,
+                  ),
+                ),
+              b() &&
+                (0, k.jsx)(`div`, {
+                  className: `mt-3`,
+                  children: (0, k.jsx)(_, {
+                    text: i,
+                    label: `Listen to the text`,
+                    size: `sm`,
+                    showSpeed: !0,
+                    revealFallback: !1,
+                  }),
+                }),
+            ],
+          }),
+        r &&
+          (0, k.jsx)(`div`, {
+            className: `mb-4`,
+            children: (0, k.jsx)(_, {
+              text: r,
+              label: d(`common.listen`),
+              size: `lg`,
+              showSpeed: !0,
+              onUnavailable: onAudioUnavailable,
+            }),
+          }),
+        (0, k.jsx)(F, { children: e }),
+        (0, k.jsx)(`div`, {
+          role: `radiogroup`,
+          "aria-label": e,
+          className: `mt-5 grid gap-2.5 sm:grid-cols-2`,
+          children: t.map((e, t) => {
+            let r = l && t === n,
+              i = l && f === t && t !== n;
+            return (0, k.jsxs)(
+              `button`,
+              {
+                type: `button`,
+                role: `radio`,
+                "aria-checked": f === t,
+                disabled: l,
+                onClick: () => m(t),
+                className: s(
+                  `flex min-h-14 items-center gap-3 rounded-2xl border-2 px-4 py-3 text-start text-[1.02rem] transition-colors`,
+                  r
+                    ? `border-success bg-success-soft`
+                    : i
+                      ? `border-danger bg-danger-soft`
+                      : f === t
+                        ? `border-primary bg-primary-soft`
+                        : `border-border bg-surface hover:border-border-strong`,
+                  l && !r && !i && `opacity-60`,
+                ),
+                children: [
+                  (0, k.jsx)(`span`, {
+                    className: `grid size-6 shrink-0 place-items-center rounded-lg border border-border-strong text-xs text-muted`,
+                    "aria-hidden": !0,
+                    children: t + 1,
+                  }),
+                  (0, k.jsx)(`span`, { className: `flex-1`, children: e }),
+                  r &&
+                    (0, k.jsx)(o, {
+                      className: `size-5 text-success`,
+                      "aria-label": `Correct answer`,
+                    }),
+                  i &&
+                    (0, k.jsx)(D, {
+                      className: `size-5 text-danger`,
+                      "aria-label": `Your answer`,
+                    }),
+                ],
+              },
+              e,
+            );
+          }),
+        }),
+        !l &&
+          (0, k.jsx)(a, {
+            size: `lg`,
+            className: `mt-6 w-full sm:w-auto sm:min-w-40`,
+            onClick: () => h(),
+            disabled: f === null,
+            children: d(`lesson.check`),
+          }),
+      ],
+    })
+  );
+}
+function L({
+  question: e,
+  accepted: t,
+  strict: n,
+  caseSensitive: r,
+  prefill: i,
+  audio: o,
+  answered: c,
+  onCheck: l,
+  almost: u,
+  clearAlmost: d,
+  onAudioUnavailable,
+  savedAnswer,
+}) {
+  let f = p(),
+    [m, h] = (0, O.useState)(savedAnswer?.given ?? i ?? ``),
+    g = (0, O.useRef)(null);
+  (0, O.useEffect)(() => g.current?.focus(), []);
+  let v = e.split(`___`),
+    y = () =>
+      m.trim() && l(C(m, t, { strictSpelling: n, caseSensitive: r }), m.trim());
+  return (0, k.jsxs)(`form`, {
+    onSubmit: (e) => {
+      (e.preventDefault(), c || y());
+    },
+    children: [
+      o &&
+        (0, k.jsx)(`div`, {
+          className: `mb-4`,
+          children: (0, k.jsx)(_, {
+            text: o,
+            label: f(`common.listen`),
+            size: `lg`,
+            showSpeed: !0,
+            onUnavailable: onAudioUnavailable,
+          }),
+        }),
+      e &&
+        (0, k.jsx)(F, {
+          children:
+            v.length > 1
+              ? (0, k.jsxs)(k.Fragment, {
+                  children: [
+                    v[0],
+                    (0, k.jsx)(`span`, {
+                      className: `mx-1 inline-block min-w-16 border-b-2 border-primary text-center text-primary-text`,
+                      "aria-label": `gap`,
+                      children: c ? m : `\xA0`,
+                    }),
+                    v.slice(1).join(`___`),
+                  ],
+                })
+              : e,
+        }),
+      (0, k.jsxs)(`label`, {
+        className: `mt-5 block`,
+        children: [
+          (0, k.jsx)(`span`, {
+            className: `sr-only`,
+            children: f(`lesson.typeAnswer`),
+          }),
+          (0, k.jsx)(`input`, {
+            ref: g,
+            value: m,
+            onChange: (e) => {
+              (h(e.target.value), u && d());
+            },
+            disabled: c,
+            autoComplete: `off`,
+            autoCorrect: `off`,
+            autoCapitalize: `off`,
+            spellCheck: !1,
+            lang: `en`,
+            placeholder: f(`lesson.typeAnswer`),
+            className: s(
+              `h-14 w-full rounded-2xl border-2 bg-surface px-5 text-lg`,
+              u
+                ? `border-warning`
+                : `border-border-strong focus:border-primary`,
+            ),
+          }),
+        ],
+      }),
+      !c &&
+        (0, k.jsx)(a, {
+          type: `submit`,
+          size: `lg`,
+          className: `mt-5 w-full sm:w-auto sm:min-w-40`,
+          disabled: !m.trim(),
+          children: f(`lesson.check`),
+        }),
+    ],
+  });
+}
+function R(e) {
+  let { prefs: t } = u(),
+    n = e.exercise,
+    r = t.nativeLanguage,
+    i = r !== `en` && r !== `other` ? n.source[r] : void 0;
+  return (0, k.jsxs)(`div`, {
+    children: [
+      i
+        ? (0, k.jsx)(`p`, {
+            className: `mb-1 rounded-2xl bg-surface-2 px-5 py-4 text-xl`,
+            lang: r,
+            dir: r === `ar` ? `rtl` : void 0,
+            children: i,
+          })
+        : (0, k.jsx)(`p`, {
+            className: `mb-1 rounded-2xl bg-surface-2 px-5 py-4 text-lg`,
+            children: n.fallback,
+          }),
+      (0, k.jsx)(L, { ...e, question: ``, accepted: n.answers }),
+    ],
+  });
+}
+function z({ exercise: e, answered: t, onFinish: n }) {
+  let r = p(),
+    i = e,
+    o = (0, O.useMemo)(
+      () =>
+        S(
+          i.words.map((e, t) => ({ w: e, i: t })),
+          w(i.id),
+        ),
+      [i],
+    ),
+    [c, l] = (0, O.useState)([]),
+    u = new Set(c.map((e) => e.i));
+  return (0, k.jsxs)(`div`, {
+    children: [
+      (0, k.jsx)(`p`, {
+        className: `text-sm text-muted`,
+        children: r(`lesson.tapWords`),
+      }),
+      (0, k.jsxs)(`div`, {
+        className: `mt-3 flex min-h-16 flex-wrap items-center gap-2 rounded-2xl border-2 border-dashed border-border-strong p-3`,
+        "aria-label": `Your sentence`,
+        "aria-live": `polite`,
+        children: [
+          c.length === 0 &&
+            (0, k.jsx)(`span`, { className: `text-muted`, children: `…` }),
+          c.map((e, n) =>
+            (0, k.jsx)(
+              `button`,
+              {
+                type: `button`,
+                disabled: t,
+                onClick: () => l(c.filter((t) => t.i !== e.i)),
+                className: `animate-pop rounded-xl bg-primary-soft px-3.5 py-2 text-lg font-medium text-primary-text`,
+                "aria-label": `Remove ${e.w}`,
+                children: e.w,
+              },
+              `${e.i}-${n}`,
+            ),
+          ),
+        ],
+      }),
+      (0, k.jsx)(`div`, {
+        className: `mt-4 flex flex-wrap gap-2`,
+        "aria-label": `Words`,
+        children: o.map((e) =>
+          (0, k.jsx)(
+            `button`,
+            {
+              type: `button`,
+              disabled: t || u.has(e.i),
+              onClick: () => l([...c, e]),
+              className: s(
+                `rounded-xl border border-border-strong bg-surface px-3.5 py-2 text-lg shadow-card transition-opacity`,
+                u.has(e.i) && `opacity-30`,
+              ),
+              children: e.w,
+            },
+            e.i,
+          ),
+        ),
+      }),
+      !t &&
+        (0, k.jsxs)(`div`, {
+          className: `mt-5 flex gap-2`,
+          children: [
+            (0, k.jsx)(a, {
+              size: `lg`,
+              className: `flex-1 sm:flex-none sm:min-w-40`,
+              onClick: () =>
+                n(
+                  T(
+                    c.map((e) => e.w),
+                    i.words,
+                    i.alternatives,
+                  ),
+                  c.map((e) => e.w).join(` `),
+                ),
+              disabled: c.length !== i.words.length,
+              children: r(`lesson.check`),
+            }),
+            c.length > 0 &&
+              (0, k.jsx)(a, {
+                variant: `ghost`,
+                size: `lg`,
+                onClick: () => l([]),
+                children: `Clear`,
+              }),
+          ],
+        }),
+    ],
+  });
+}
+function B({ exercise: t, answered: n, onFinish: r }) {
+  let i = t,
+    a = i.pairs.map((e) => e[0]),
+    o = (0, O.useMemo)(
+      () =>
+        S(
+          i.pairs.map((e) => e[1]),
+          w(i.id),
+        ),
+      [i],
+    ),
+    [c, l] = (0, O.useState)(null),
+    [u, d] = (0, O.useState)({}),
+    [f, p] = (0, O.useState)(0),
+    [m, h] = (0, O.useState)(null),
+    g = (e) => {
+      if (c) {
+        if (i.pairs.find((e) => e[0] === c)?.[1] === e) {
+          let t = { ...u, [c]: e };
+          (d(t),
+            l(null),
+            Object.keys(t).length === i.pairs.length &&
+              r(f === 0, f ? `${f} mistake(s)` : void 0));
+        } else (p((e) => e + 1), h(e), setTimeout(() => h(null), 600));
+      }
+    },
+    _ = new Set(Object.values(u));
+  return (0, k.jsxs)(`div`, {
+    children: [
+      i.prompt && (0, k.jsx)(F, { children: i.prompt }),
+      (0, k.jsxs)(`p`, {
+        className: `mt-2 text-sm text-muted`,
+        "aria-live": `polite`,
+        children: [
+          c
+            ? `Selected "${c}". Now choose its match.`
+            : `Choose an item on the left, then its match on the right.`,
+          f > 0 && ` · Mistakes: ${f}`,
+        ],
+      }),
+      (0, k.jsxs)(`div`, {
+        className: `mt-4 grid grid-cols-2 gap-3`,
+        children: [
+          (0, k.jsx)(`div`, {
+            className: `space-y-2`,
+            children: a.map((t) =>
+              (0, k.jsxs)(
+                `button`,
+                {
+                  type: `button`,
+                  disabled: n || !!u[t],
+                  "aria-pressed": c === t,
+                  onClick: () => l(t),
+                  className: s(
+                    `flex w-full items-center justify-between gap-2 rounded-2xl border-2 px-4 py-3 text-start`,
+                    u[t]
+                      ? `border-success/40 bg-success-soft`
+                      : c === t
+                        ? `border-primary bg-primary-soft`
+                        : `border-border bg-surface hover:border-border-strong`,
+                  ),
+                  children: [
+                    (0, k.jsx)(`span`, { children: t }),
+                    u[t] &&
+                      (0, k.jsx)(e, {
+                        className: `size-4 text-success`,
+                        "aria-label": `matched`,
+                      }),
+                  ],
+                },
+                t,
+              ),
+            ),
+          }),
+          (0, k.jsx)(`div`, {
+            className: `space-y-2`,
+            children: o.map((t) =>
+              (0, k.jsxs)(
+                `button`,
+                {
+                  type: `button`,
+                  disabled: n || _.has(t),
+                  onClick: () => g(t),
+                  className: s(
+                    `flex w-full items-center justify-between gap-2 rounded-2xl border-2 px-4 py-3 text-start transition-colors`,
+                    _.has(t)
+                      ? `border-success/40 bg-success-soft`
+                      : m === t
+                        ? `border-danger bg-danger-soft`
+                        : `border-border bg-surface hover:border-border-strong`,
+                  ),
+                  children: [
+                    (0, k.jsx)(`span`, { children: t }),
+                    _.has(t) &&
+                      (0, k.jsx)(e, {
+                        className: `size-4 text-success`,
+                        "aria-label": `matched`,
+                      }),
+                  ],
+                },
+                t,
+              ),
+            ),
+          }),
+        ],
+      }),
+    ],
+  });
+}
+function V({ exercise: e, answered: t, onFinish: n }) {
+  let r = p(),
+    i = e,
+    o = i.sentence.split(` `),
+    [c, l] = (0, O.useState)(null);
+  return (0, k.jsxs)(`div`, {
+    children: [
+      i.prompt && (0, k.jsx)(F, { children: i.prompt }),
+      (0, k.jsx)(`div`, {
+        className: `mt-2 flex flex-wrap gap-2 text-xl`,
+        role: `radiogroup`,
+        "aria-label": `Words in the sentence`,
+        children: o.map((e, n) =>
+          (0, k.jsx)(
+            `button`,
+            {
+              type: `button`,
+              role: `radio`,
+              "aria-checked": c === n,
+              disabled: t,
+              onClick: () => l(n),
+              className: s(
+                `rounded-xl border-2 px-3 py-1.5`,
+                t && n === i.wrongIndex
+                  ? `border-danger bg-danger-soft line-through decoration-2`
+                  : c === n
+                    ? `border-primary bg-primary-soft`
+                    : `border-transparent bg-surface-2 hover:border-border-strong`,
+              ),
+              children: e,
+            },
+            n,
+          ),
+        ),
+      }),
+      t &&
+        (0, k.jsxs)(`p`, {
+          className: `mt-3`,
+          children: [
+            `Correction: `,
+            (0, k.jsx)(`strong`, {
+              className: `text-success`,
+              children: i.correction,
+            }),
+          ],
+        }),
+      !t &&
+        (0, k.jsx)(a, {
+          size: `lg`,
+          className: `mt-6 w-full sm:w-auto sm:min-w-40`,
+          disabled: c === null,
+          onClick: () => c !== null && n(c === i.wrongIndex, o[c]),
+          children: r(`lesson.check`),
+        }),
+    ],
+  });
+}
+function H({ exercise: e, answered: t, onFinish: n }) {
+  let r = e,
+    i = d(),
+    [o, s] = (0, O.useState)(``),
+    [c, l] = (0, O.useState)(null),
+    [u, p] = (0, O.useState)(null),
+    [h, _] = (0, O.useState)(!1),
+    v = o.trim() ? o.trim().split(/\s+/).length : 0;
+  return (0, k.jsxs)(`div`, {
+    children: [
+      (0, k.jsx)(F, { children: r.prompt }),
+      (0, k.jsxs)(`label`, {
+        className: `mt-4 block`,
+        children: [
+          (0, k.jsx)(`span`, { className: `sr-only`, children: `Your answer` }),
+          (0, k.jsx)(`textarea`, {
+            value: o,
+            onChange: (e) => s(e.target.value),
+            disabled: t,
+            rows: 5,
+            lang: `en`,
+            className: `w-full rounded-2xl border-2 border-border-strong bg-surface p-4 text-lg focus:border-primary`,
+            maxLength: 2e3,
+          }),
+        ],
+      }),
+      (0, k.jsxs)(`p`, {
+        className: `mt-1 text-sm text-muted`,
+        "aria-live": `polite`,
+        children: [v, ` / `, r.minWords, ` words`],
+      }),
+      !t &&
+        (0, k.jsxs)(`div`, {
+          className: `mt-4 flex flex-wrap gap-2`,
+          children: [
+            (0, k.jsx)(a, {
+              disabled: v < r.minWords,
+              onClick: () => n(!0, o.slice(0, 400)),
+              children: `Submit`,
+            }),
+            (0, k.jsx)(a, {
+              variant: `secondary`,
+              icon: f,
+              disabled: v < 3 || h,
+              onClick: async () => {
+                (_(!0), p(null));
+                try {
+                  l(
+                    await m(`/api/ai/writing`, {
+                      profile: i,
+                      mode: `grammar`,
+                      text: o,
+                      includeImproved: !1,
+                      prompt: r.prompt,
+                    }),
+                  );
+                } catch (e) {
+                  p(g(e));
+                } finally {
+                  _(!1);
+                }
+              },
+              children: h ? `Checking…` : `Get AI feedback (optional)`,
+            }),
+          ],
+        }),
+      u &&
+        (0, k.jsx)(`p`, { className: `mt-3 text-sm text-danger`, children: u }),
+      c &&
+        (0, k.jsxs)(`div`, {
+          className: `mt-4 rounded-2xl bg-surface-2 p-4 text-sm`,
+          children: [
+            (0, k.jsx)(`p`, { className: `font-medium`, children: c.summary }),
+            c.issues.filter((e) => !e.optional).length > 0 &&
+              (0, k.jsxs)(k.Fragment, {
+                children: [
+                  (0, k.jsx)(`p`, {
+                    className: `mt-2 text-muted`,
+                    children: `Corrected:`,
+                  }),
+                  (0, k.jsx)(`p`, {
+                    className: `mt-0.5`,
+                    children: c.corrected,
+                  }),
+                ],
+              }),
+            (0, k.jsx)(`ul`, {
+              className: `mt-2 space-y-1`,
+              children: c.issues
+                .slice(0, 6)
+                .map((e, t) =>
+                  (0, k.jsxs)(
+                    `li`,
+                    {
+                      children: [
+                        (0, k.jsx)(`span`, {
+                          className: `line-through decoration-danger`,
+                          children: e.original,
+                        }),
+                        ` → `,
+                        (0, k.jsx)(`strong`, { children: e.suggestion }),
+                        ` `,
+                        (0, k.jsxs)(`span`, {
+                          className: `text-muted`,
+                          children: [
+                            `(`,
+                            e.optional ? `optional` : e.category,
+                            `) `,
+                            e.explanation,
+                          ],
+                        }),
+                      ],
+                    },
+                    t,
+                  ),
+                ),
+            }),
+            (0, k.jsx)(`p`, {
+              className: `mt-2 text-xs text-muted`,
+              children: `AI feedback can be wrong. Use it as a helpful second opinion.`,
+            }),
+          ],
+        }),
+      t &&
+        r.sample &&
+        (0, k.jsxs)(`p`, {
+          className: `mt-4 rounded-2xl bg-surface-2 p-4 text-sm`,
+          children: [
+            (0, k.jsx)(`span`, {
+              className: `font-medium`,
+              children: `Example answer: `,
+            }),
+            r.sample,
+          ],
+        }),
+    ],
+  });
+}
+function U({ exercise: e, answered: t, onFinish: n }) {
+  let r = e,
+    i = v(),
+    o = i.transcript ? x(r.text, i.transcript) : [],
+    c = o.filter((e) => e.matched).length,
+    l = o.length ? c / o.length : 0,
+    u = /…|\.\.\./.test(r.text);
+  return (0, k.jsxs)(`div`, {
+    children: [
+      r.prompt &&
+        (0, k.jsx)(`p`, { className: `mb-2 text-lg`, children: r.prompt }),
+      (0, k.jsx)(`p`, { className: `text-2xl font-medium`, children: r.text }),
+      (0, k.jsx)(`div`, {
+        className: `mt-4`,
+        children: (0, k.jsx)(_, {
+          text: r.text.replace(/…/g, ``),
+          label: `Listen first`,
+          showSpeed: !0,
+        }),
+      }),
+      !t &&
+        (0, k.jsxs)(`div`, {
+          className: `mt-5 space-y-3`,
+          children: [
+            i.supported
+              ? (0, k.jsxs)(k.Fragment, {
+                  children: [
+                    (0, k.jsx)(y, { recorder: i }),
+                    i.transcript &&
+                      (0, k.jsxs)(`div`, {
+                        className: `rounded-2xl bg-surface-2 p-4`,
+                        children: [
+                          (0, k.jsx)(`p`, {
+                            className: `text-sm text-muted`,
+                            children: `We heard:`,
+                          }),
+                          (0, k.jsxs)(`p`, {
+                            className: `mt-1 text-lg`,
+                            children: [`“`, i.transcript, `”`],
+                          }),
+                          !u &&
+                            (0, k.jsx)(`p`, {
+                              className: `mt-2 flex flex-wrap gap-1.5 text-sm`,
+                              "aria-label": `Word check`,
+                              children: o.map((e, t) =>
+                                (0, k.jsxs)(
+                                  `span`,
+                                  {
+                                    className: s(
+                                      `rounded px-1.5 py-0.5`,
+                                      e.matched
+                                        ? `bg-success-soft text-success`
+                                        : `bg-warning-soft text-warning underline`,
+                                    ),
+                                    children: [
+                                      e.word,
+                                      (0, k.jsx)(`span`, {
+                                        className: `sr-only`,
+                                        children: e.matched
+                                          ? ` (heard)`
+                                          : ` (not heard)`,
+                                      }),
+                                    ],
+                                  },
+                                  t,
+                                ),
+                              ),
+                            }),
+                          (0, k.jsx)(`p`, {
+                            className: `mt-2 text-xs text-muted`,
+                            children: `This is based on speech-to-text, not a precise pronunciation score. Background noise and microphone quality affect it.`,
+                          }),
+                        ],
+                      }),
+                    i.error &&
+                      (0, k.jsx)(`p`, {
+                        className: `text-sm text-danger`,
+                        children: i.error,
+                      }),
+                    i.state === `done` &&
+                      (0, k.jsx)(a, {
+                        onClick: () => n(u || l >= 0.7, i.transcript),
+                        children:
+                          u || l >= 0.7 ? `Great — continue` : `Continue`,
+                      }),
+                  ],
+                })
+              : (0, k.jsx)(`p`, {
+                  className: `text-sm text-muted`,
+                  children: `Speech recognition is not available in this browser.`,
+                }),
+            (0, k.jsx)(a, {
+              variant: `secondary`,
+              onClick: () =>
+                n(!0, `(self-assessed)`, { deviceSkip: !i.supported }),
+              children: `I said it aloud (self-check)`,
+            }),
+          ],
+        }),
+    ],
+  });
+}
+export { D as n, M as t, j as expectedAnswer };

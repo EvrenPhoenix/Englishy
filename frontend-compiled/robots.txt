@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+# Personal learning areas: content is stored only in the visitor's browser and should not be indexed.
+Disallow: /home
+Disallow: /practise
+Disallow: /tutor
+Disallow: /writing
+Disallow: /progress
+Disallow: /settings
+Disallow: /start
+Disallow: /placement
+Disallow: /api/
+
+Sitemap: https://englishy.assistant-service.workers.dev/sitemap.xml
