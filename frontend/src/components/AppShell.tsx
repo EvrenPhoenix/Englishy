@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from "react";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { Menu, WifiOff } from "lucide-react";
 import { BRAND } from "../../../shared/brand";
@@ -149,32 +150,34 @@ export function AppShell() {
           tabIndex={-1}
           className={`outline-none ${chat ? "min-h-0 flex-1" : "mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 lg:px-10 lg:pt-10"} ${chat ? "" : bottom ? "pb-28 lg:pb-16" : "pb-12"}`}
         >
-          <Suspense
-            fallback={
-              <div className={chat ? "mx-auto max-w-3xl p-6" : ""}>
-                <div
-                  className="space-y-3"
-                  role="status"
-                  aria-label={t("app.loading")}
-                >
+          <ErrorBoundary key={pathname}>
+            <Suspense
+              fallback={
+                <div className={chat ? "mx-auto max-w-3xl p-6" : ""}>
                   <div
-                    className="animate-pulse rounded-2xl bg-surface-2 h-9 w-1/2"
-                    aria-hidden
-                  />
-                  <div
-                    className="animate-pulse rounded-2xl bg-surface-2 h-28 w-full"
-                    aria-hidden
-                  />
-                  <div
-                    className="animate-pulse rounded-2xl bg-surface-2 h-28 w-full"
-                    aria-hidden
-                  />
+                    className="space-y-3"
+                    role="status"
+                    aria-label={t("app.loading")}
+                  >
+                    <div
+                      className="animate-pulse rounded-2xl bg-surface-2 h-9 w-1/2"
+                      aria-hidden
+                    />
+                    <div
+                      className="animate-pulse rounded-2xl bg-surface-2 h-28 w-full"
+                      aria-hidden
+                    />
+                    <div
+                      className="animate-pulse rounded-2xl bg-surface-2 h-28 w-full"
+                      aria-hidden
+                    />
+                  </div>
                 </div>
-              </div>
-            }
-          >
-            <Outlet />
-          </Suspense>
+              }
+            >
+              <Outlet />
+            </Suspense>
+          </ErrorBoundary>
         </main>
       </div>
       {bottom && <MobileNavigation />}

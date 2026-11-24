@@ -82,6 +82,81 @@ const writingFeedback = {
   },
 };
 
+// The base fixture's vocab rows predate several fields; give vocabulary tests complete
+// notebook records (two bank words and one custom word). With `oneDue`, only cat is due.
+const realWords = (oneDue) => async (p) => {
+  await p.evaluate(async (oneDue) => {
+    const db = await new Promise((ok) => {
+      const r = indexedDB.open("linguanest");
+      r.onsuccess = () => ok(r.result);
+    });
+    const at = "2026-11-24T10:00:00.000Z";
+    const srs = (interval, due, reviewed = at) => ({
+      ease: 2.5,
+      interval,
+      reps: 2,
+      lapses: 0,
+      due,
+      lastReviewed: reviewed,
+    });
+    const tx = db.transaction("vocab", "readwrite");
+    const store = tx.objectStore("vocab");
+    store.clear();
+    store.put({
+      id: "bank:cat",
+      word: "cat",
+      pos: "noun",
+      definition: "a small animal with fur that people keep as a pet",
+      translation: undefined,
+      ipa: "/kæt/",
+      examples: ["My cat sleeps a lot."],
+      collocations: ["pet cat"],
+      synonyms: ["kitty"],
+      level: "pre-a1",
+      topic: "animals",
+      custom: false,
+      savedAt: at,
+      srs: srs(21, at),
+    });
+    store.put({
+      id: "bank:dog",
+      word: "dog",
+      pos: "noun",
+      definition: "an animal that people keep as a pet or to guard a house",
+      ipa: "/dɒɡ/",
+      examples: ["The dog is in the garden."],
+      antonyms: ["cat"],
+      level: "pre-a1",
+      topic: "animals",
+      custom: false,
+      savedAt: at,
+      srs: srs(1, oneDue ? "2026-12-30T00:00:00.000Z" : at),
+    });
+    store.put({
+      id: "custom:kettle",
+      word: "kettle",
+      pos: "noun",
+      definition: "a pot for boiling water",
+      translation: "chaleira",
+      examples: [],
+      level: "a1",
+      topic: "custom",
+      custom: true,
+      savedAt: at,
+      srs: {
+        ease: 2.5,
+        interval: 0,
+        reps: 0,
+        lapses: 0,
+        due: "2026-12-01T00:00:00.000Z",
+        lastReviewed: null,
+      },
+    });
+    await new Promise((ok) => (tx.oncomplete = ok));
+    db.close();
+  }, oneDue);
+};
+
 export const pages = {
   NotFound: {
     path: "/no-such-page",
@@ -277,6 +352,162 @@ export const pages = {
     ready: (p) => p.locator("main .border-dashed").waitFor(),
   },
 };
+Object.assign(pages, {
+  "Vocabulary-broken-data": { path: "/vocabulary", ready: h1 },
+  Vocabulary: { path: "/vocabulary", ready: h1, seed: realWords(false) },
+  "Vocabulary-search": {
+    seed: realWords(false),
+    path: "/vocabulary",
+    ready: h1,
+    act: (p) => p.locator("main input[type=search]").fill("do"),
+  },
+  "Vocabulary-add-dialog": {
+    seed: realWords(false),
+    path: "/vocabulary",
+    ready: h1,
+    viewportOnly: true,
+    act: async (p) => {
+      await p.locator("main .sm\\:flex-row button").first().click();
+      await p.locator("dialog[open] input").first().fill("kettle");
+    },
+  },
+  "Vocabulary-remove-dialog": {
+    seed: realWords(false),
+    path: "/vocabulary",
+    ready: h1,
+    viewportOnly: true,
+    act: (p) =>
+      p.locator('main li button[aria-label^="Remove"]').first().click(),
+  },
+  "Vocabulary-browse": {
+    path: "/vocabulary?tab=browse",
+    ready: h1,
+    seed: realWords(false),
+  },
+  "Vocabulary-browse-topic": {
+    seed: realWords(false),
+    path: "/vocabulary?tab=browse",
+    ready: h1,
+    act: (p) => p.locator("main [role=group] button").nth(3).click(),
+  },
+  "Vocabulary-browse-search": {
+    seed: realWords(false),
+    path: "/vocabulary?tab=browse",
+    ready: h1,
+    act: (p) => p.locator("main input[type=search]").fill("food"),
+  },
+  "Vocabulary-save": {
+    seed: realWords(false),
+    path: "/vocabulary?tab=browse",
+    ready: h1,
+    act: async (p) => {
+      await p.locator("main li button.self-start").nth(2).click();
+      await p
+        .locator("main li")
+        .nth(2)
+        .locator("button.self-start[disabled]")
+        .waitFor();
+    },
+  },
+  "Vocabulary-review": {
+    path: "/vocabulary?review=1",
+    ready: h1,
+    seed: realWords(false),
+  },
+  "Vocabulary-recall": {
+    path: "/vocabulary?review=1",
+    ready: h1,
+    // One word due so the shuffled queue is deterministic.
+    seed: realWords(true),
+    act: async (p) => {
+      await p.locator("main .card-hover").nth(1).click();
+      await p.locator("#recall").fill("caat");
+      await p.locator("#recall").press("Enter");
+      await p.locator("main [role=status]").waitFor();
+    },
+  },
+  "Vocabulary-cards": {
+    path: "/vocabulary?review=1",
+    ready: h1,
+    seed: realWords(true),
+    act: async (p) => {
+      await p.locator("main .card-hover").first().click();
+      await p.locator("main button.w-full").click();
+    },
+  },
+  "Vocabulary-done": {
+    path: "/vocabulary?review=1",
+    ready: h1,
+    seed: realWords(true),
+    act: async (p) => {
+      await p.locator("main .card-hover").first().click();
+      await p.locator("main button.w-full").click();
+      await p.locator("main .grid-cols-4 button").nth(2).click();
+      await p.locator("main .card .text-xl").waitFor();
+    },
+  },
+});
+
+// Data-only vocabulary flows (check-flow-data.mjs).
+Object.assign(pages, {
+  "Vocabulary-add-save": {
+    path: "/vocabulary",
+    ready: h1,
+    seed: realWords(false),
+    act: async (p) => {
+      await p.locator("main .sm\\:flex-row button").first().click();
+      const inputs = p.locator("dialog[open] input");
+      await inputs.nth(0).fill("  teapot ");
+      await p.locator("dialog[open] select").selectOption("noun");
+      await inputs.nth(1).fill("a pot for making tea");
+      await inputs.nth(2).fill("bule");
+      await inputs.nth(3).fill("The teapot is hot.");
+      await p
+        .locator("dialog[open] footer, dialog[open] .justify-end button")
+        .last()
+        .click();
+      await p
+        .locator("dialog[open]")
+        .waitFor({ state: "detached" })
+        .catch(() => {});
+    },
+  },
+  "Vocabulary-remove-confirm": {
+    path: "/vocabulary",
+    ready: h1,
+    seed: realWords(false),
+    act: async (p) => {
+      await p.locator('main li button[aria-label^="Remove"]').first().click();
+      await p.locator("dialog[open] .justify-end button").last().click();
+    },
+  },
+  "Vocabulary-grade-hard": {
+    path: "/vocabulary?review=1",
+    ready: h1,
+    seed: realWords(true),
+    act: async (p) => {
+      await p.locator("main .card-hover").nth(1).click();
+      await p.locator("#recall").fill("caat");
+      await p.locator("#recall").press("Enter");
+      await p.locator("main .grid-cols-4 button").nth(1).click();
+      await p.locator("main .card .text-xl").waitFor();
+    },
+  },
+  "Vocabulary-grade-again-then-easy": {
+    path: "/vocabulary?review=1",
+    ready: h1,
+    seed: realWords(true),
+    act: async (p) => {
+      await p.locator("main .card-hover").first().click();
+      await p.keyboard.press("Space");
+      await p.keyboard.press("1");
+      await p.keyboard.press("Enter");
+      await p.keyboard.press("4");
+      await p.locator("main .card .text-xl").waitFor();
+    },
+  },
+});
+
 const grammarIds = [
   "parts-of-speech",
   "nouns",

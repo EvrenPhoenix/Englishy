@@ -1,6 +1,7 @@
 import { Onboarding } from "./pages/Onboarding";
 import { PlacementPage } from "./pages/PlacementPage";
-import { lazy } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Landing } from "./pages/Landing";
 import { Guide } from "./pages/Guide";
 import { Help } from "./pages/Help";
@@ -25,6 +26,9 @@ const GrammarPage = lazy(async () => ({
 const GrammarTopicPage = lazy(async () => ({
   default: (await import("./pages/GrammarTopicPage")).GrammarTopicPage,
 }));
+const VocabularyPage = lazy(async () => ({
+  default: (await import("./pages/VocabularyPage")).VocabularyPage,
+}));
 const Settings = lazy(async () => ({
   default: (await import("./pages/Settings")).Settings,
 }));
@@ -40,16 +44,45 @@ const pages: Partial<Record<Destination, React.ReactElement>> = {
   grammar: <GrammarPage />,
   help: <Help />,
   settings: <Settings />,
+  vocabulary: <VocabularyPage />,
 };
 
+/** Public pages get the same error boundary and loading state as the app shell. */
+const publicPage = (page: ReactNode) => (
+  <ErrorBoundary>
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-4xl p-6">
+          <div className="space-y-3" role="status" aria-label="Loading…">
+            <div
+              className="animate-pulse rounded-2xl bg-surface-2 h-9 w-1/2"
+              aria-hidden
+            />
+            <div
+              className="animate-pulse rounded-2xl bg-surface-2 h-28 w-full"
+              aria-hidden
+            />
+            <div
+              className="animate-pulse rounded-2xl bg-surface-2 h-28 w-full"
+              aria-hidden
+            />
+          </div>
+        </div>
+      }
+    >
+      {page}
+    </Suspense>
+  </ErrorBoundary>
+);
+
 export const router = createBrowserRouter([
-  { path: "/", element: <Landing /> },
-  { path: "/guides/:slug", element: <Guide /> },
+  { path: "/", element: publicPage(<Landing />) },
+  { path: "/guides/:slug", element: publicPage(<Guide />) },
   {
     element: <Outlet />,
     children: [
-      { path: "/start", element: <Onboarding /> },
-      { path: "/placement", element: <PlacementPage /> },
+      { path: "/start", element: publicPage(<Onboarding />) },
+      { path: "/placement", element: publicPage(<PlacementPage />) },
     ],
   },
   {
