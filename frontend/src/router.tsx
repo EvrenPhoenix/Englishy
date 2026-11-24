@@ -1,6 +1,4 @@
-import { ConversationList } from "./pages/ConversationList";
-import { LearnPage } from "./pages/LearnPage";
-import { GrammarPage } from "./pages/GrammarPage";
+import { lazy } from "react";
 import { Landing } from "./pages/Landing";
 import { Guide } from "./pages/Guide";
 import { Help } from "./pages/Help";
@@ -10,7 +8,21 @@ import { AppShell } from "./components/AppShell";
 import { navItems, type Destination } from "./components/navigation";
 import { Placeholder } from "./pages/Placeholder";
 
+const LearnPage = lazy(async () => ({
+  default: (await import("./pages/LearnPage")).LearnPage,
+}));
+const ProgressPage = lazy(async () => ({
+  default: (await import("./pages/ProgressPage")).ProgressPage,
+}));
+const GrammarPage = lazy(async () => ({
+  default: (await import("./pages/GrammarPage")).GrammarPage,
+}));
+const ConversationList = lazy(async () => ({
+  default: (await import("./pages/ConversationList")).ConversationList,
+}));
+
 const pages: Partial<Record<Destination, React.ReactElement>> = {
+  progress: <ProgressPage />,
   conversation: <ConversationList />,
   learn: <LearnPage />,
   grammar: <GrammarPage />,

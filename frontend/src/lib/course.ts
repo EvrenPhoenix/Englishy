@@ -18,3 +18,5 @@ export function nextLesson(level: Level, completed: Set<string>) {
     lessons.find((lesson) => !completed.has(lesson.id))
   );
 }
+export const findLesson = (id: string) =>
+  lessons.find((lesson) => lesson.id === id);

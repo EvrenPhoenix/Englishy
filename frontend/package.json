@@ -6,7 +6,8 @@
     "dev": "vite",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && vite build",
-    "check:data": "node scripts/check-data.mjs"
+    "check:data": "node scripts/check-data.mjs",
+    "check:profile": "node scripts/check-saved-profile.mjs"
   },
   "dependencies": {
     "idb": "8.0.4",
@@ -20,6 +21,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "6.3.0",
+    "playwright-core": "1.65.1",
     "tailwindcss": "4.3.5",
     "typescript": "5.9.3",
     "vite": "8.3.8"
