@@ -9,7 +9,6 @@ import { NotFound } from "./pages/NotFound";
 import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import { AppShell } from "./components/AppShell";
 import { navItems, type Destination } from "./components/navigation";
-import { Placeholder } from "./pages/Placeholder";
 
 const Dashboard = lazy(async () => ({
   default: (await import("./pages/Dashboard")).Dashboard,
@@ -54,7 +53,7 @@ const ConversationList = lazy(async () => ({
   default: (await import("./pages/ConversationList")).ConversationList,
 }));
 
-const pages: Partial<Record<Destination, React.ReactElement>> = {
+const pages: Record<Destination, React.ReactElement> = {
   home: <Dashboard />,
   progress: <ProgressPage />,
   conversation: <ConversationList />,
@@ -112,7 +111,7 @@ export const router = createBrowserRouter([
     children: [
       ...(Object.keys(navItems) as Destination[]).map((id) => ({
         path: `/${id}`,
-        element: pages[id] ?? <Placeholder message={`nav.${id}`} />,
+        element: pages[id],
       })),
       { path: "/learn/:lessonId", element: <LessonPage /> },
       { path: "/grammar/:topicId", element: <GrammarTopicPage /> },
