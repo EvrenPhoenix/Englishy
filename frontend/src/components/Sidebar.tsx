@@ -121,9 +121,13 @@ function RecentChats({ onNavigate }: { onNavigate?: () => void }) {
   const { pathname } = useLocation(),
     [query] = useSearchParams();
   if (!prefs.saveConversations || !rows.length) return null;
+  const current = pathname === "/tutor" ? query.get("c") : null;
   return (
-    <nav aria-label={t("nav.recentChats")} className="mt-6">
-      <h2 className="px-3.5 pb-1.5 text-xs font-medium text-muted">
+    <nav aria-labelledby="recent-chats" className="mt-6">
+      <h2
+        id="recent-chats"
+        className="px-3.5 pb-1.5 text-xs font-medium text-muted"
+      >
         {t("nav.recentChats")}
       </h2>
       <ul className="space-y-0.5">
@@ -132,12 +136,12 @@ function RecentChats({ onNavigate }: { onNavigate?: () => void }) {
             <Link
               to={`/tutor?c=${encodeURIComponent(row.id)}`}
               onClick={onNavigate}
-              aria-current={
-                pathname === "/tutor" && query.get("c") === row.id
-                  ? "page"
-                  : undefined
+              aria-current={current === row.id ? "page" : undefined}
+              className={
+                current === row.id
+                  ? "block truncate rounded-full px-3.5 py-2 text-sm transition-colors bg-surface-3 font-medium text-text"
+                  : "block truncate rounded-full px-3.5 py-2 text-sm transition-colors text-text/80 hover:bg-surface-3/70 hover:text-text"
               }
-              className="block truncate rounded-full px-3.5 py-2 text-sm text-text/80 hover:bg-surface-3/70 aria-[current=page]:bg-surface-3 aria-[current=page]:font-medium"
             >
               {row.title}
             </Link>

@@ -878,6 +878,205 @@ Object.assign(pages, {
   },
 });
 
+const tutorMarkdown = [
+  "Great question! Here are **three** ways to introduce yourself:\n\n",
+  "1. *Hello*, I'm Ana.\n2. Nice to meet you.\n3. My name is Ana.\n\n",
+  "- Use `I'm` in speech\n- Read more at [the guide](https://example.com/guide) or [here](javascript:alert(1))\n\n",
+  "> Tip: smile!\n\n| Phrase | Use |\n| --- | --- |\n| Hi | casual |\n\n<script>alert(1)</script><img src=x onerror=alert(1)>~~old~~ line one\nline two",
+];
+const savedTutorChat = async (p) => {
+  await p.evaluate(async () => {
+    const db = await new Promise((ok) => {
+      const r = indexedDB.open("linguanest");
+      r.onsuccess = () => ok(r.result);
+    });
+    const tx = db.transaction("conversations", "readwrite");
+    tx.objectStore("conversations").put({
+      id: "tutor_saved",
+      kind: "tutor",
+      title: "How do I say hello?",
+      createdAt: "2026-11-24T09:00:00.000Z",
+      updatedAt: "2026-11-24T09:05:00.000Z",
+      messages: [
+        {
+          role: "user",
+          content: "How do I say hello?",
+          at: "2026-11-24T09:00:00.000Z",
+        },
+        {
+          role: "assistant",
+          content:
+            "You can say **Hello** or *Hi*.\n\n- Hello, Sam!\n- Hi there!",
+          at: "2026-11-24T09:00:05.000Z",
+        },
+        {
+          role: "user",
+          content: "And goodbye?",
+          at: "2026-11-24T09:04:00.000Z",
+        },
+        {
+          role: "assistant",
+          content: "Say **Goodbye** or *See you*.",
+          at: "2026-11-24T09:05:00.000Z",
+        },
+      ],
+    });
+    await new Promise((ok) => (tx.oncomplete = ok));
+    db.close();
+  });
+};
+const composer = "main textarea[data-composer]";
+const sendMessage = async (p, text) => {
+  await p.locator(composer).fill(text);
+  await p.locator(composer).press("Enter");
+};
+const waitReply = (p) => p.locator("main .prose-tutor").last().waitFor();
+Object.assign(pages, {
+  Tutor: { path: "/tutor", ready: h1 },
+  "Tutor-reply": {
+    path: "/tutor",
+    ready: h1,
+    api: { tutor: { sse: tutorMarkdown } },
+    act: async (p) => {
+      await p.locator("main .grid button").first().click();
+      await waitReply(p);
+      await p.locator("main button[title]").last().waitFor();
+    },
+  },
+  "Tutor-saved": {
+    path: "/tutor?c=tutor_saved",
+    ready: h1,
+    seed: savedTutorChat,
+    act: waitReply,
+  },
+  "Tutor-continue": {
+    path: "/tutor?c=tutor_saved",
+    ready: h1,
+    seed: savedTutorChat,
+    api: { tutor: { sse: ["Sure: *Bye!*"] } },
+    act: async (p) => {
+      await waitReply(p);
+      await sendMessage(p, "Any short one?");
+      await p.locator("main .prose-tutor em", { hasText: "Bye!" }).waitFor();
+    },
+  },
+  "Tutor-regenerate": {
+    path: "/tutor?c=tutor_saved",
+    ready: h1,
+    seed: savedTutorChat,
+    api: { tutor: { sse: ["Regenerated: **See you later**."] } },
+    act: async (p) => {
+      await waitReply(p);
+      await p.locator("main .group").last().locator("button").last().click();
+      await p
+        .locator("main .prose-tutor", { hasText: "Regenerated" })
+        .waitFor();
+    },
+  },
+  "Tutor-error": {
+    path: "/tutor",
+    ready: h1,
+    api: {
+      tutor: {
+        status: 503,
+        json: {
+          error: {
+            code: "upstream_unavailable",
+            message: "The AI service is busy.",
+          },
+        },
+      },
+    },
+    act: async (p) => {
+      await sendMessage(p, "Hello?");
+      await p.locator("main [role=alert]").waitFor();
+    },
+  },
+  "Tutor-unavailable": {
+    path: "/tutor",
+    ready: h1,
+    api: {
+      status: { json: { enabled: false, configured: false, available: false } },
+    },
+    act: (p) => p.locator("main [role=status]").first().waitFor(),
+  },
+  "Tutor-not-saved": {
+    path: "/tutor",
+    ready: h1,
+    seed: async (p) => {
+      await p.evaluate(async () => {
+        const db = await new Promise((ok) => {
+          const r = indexedDB.open("linguanest");
+          r.onsuccess = () => ok(r.result);
+        });
+        const tx = db.transaction("kv", "readwrite");
+        const kv = tx.objectStore("kv");
+        const prefs = await new Promise(
+          (ok) => (kv.get("prefs").onsuccess = (e) => ok(e.target.result)),
+        );
+        kv.put({ ...prefs, saveConversations: false, level: "b1" }, "prefs");
+        await new Promise((ok) => (tx.oncomplete = ok));
+        db.close();
+      });
+    },
+  },
+  "Tutor-delete-dialog": {
+    path: "/tutor?c=tutor_saved",
+    ready: h1,
+    seed: savedTutorChat,
+    viewportOnly: true,
+    act: async (p) => {
+      await waitReply(p);
+      await p.locator("main header button").click();
+      await p.locator("dialog[open]").waitFor();
+    },
+  },
+  "Tutor-prefill": {
+    path: "/tutor?q=Explain%20the%20past%20simple",
+    ready: h1,
+  },
+  "Tutor-autosend": {
+    path: "/tutor?q=What%20is%20a%20noun%3F&send=1",
+    ready: h1,
+    api: { tutor: { sse: ["A **noun** is a word for a thing."] } },
+    act: waitReply,
+  },
+  "Tutor-long-draft": {
+    path: "/tutor",
+    ready: h1,
+    act: (p) => p.locator(composer).fill("long ".repeat(220)),
+  },
+});
+
+Object.assign(pages, {
+  "Tutor-save-data": {
+    path: "/tutor",
+    ready: h1,
+    api: { tutor: { sse: ["Hello! ", "Nice to meet you."] } },
+    act: async (p) => {
+      await sendMessage(p, "Hi, I am Ana");
+      await waitReply(p);
+      await p.waitForURL(/c=tutor_/);
+    },
+    // Leaving the page logs the tutor session.
+    after: async (p) => {
+      await p.locator('a[href="/home"]').first().click();
+      await p.waitForURL(/\/home$/);
+    },
+  },
+  "Tutor-delete-data": {
+    path: "/tutor?c=tutor_saved",
+    ready: h1,
+    seed: savedTutorChat,
+    act: async (p) => {
+      await waitReply(p);
+      await p.locator("main header button").click();
+      await p.locator("dialog[open] button.bg-danger").click();
+      await p.waitForURL(/new=/);
+    },
+  },
+});
+
 const grammarIds = [
   "parts-of-speech",
   "nouns",
