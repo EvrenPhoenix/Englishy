@@ -89,17 +89,26 @@ export async function loadPreferences() {
     prefs: mergeDefaults(await db?.get(stores.kv, prefsKey)),
   };
 }
-export async function updatePreferences(patch: Partial<Preferences>) {
+export async function updatePreferences(
+  patch: Partial<Preferences> | ((prefs: Preferences) => Partial<Preferences>),
+) {
   const db = await database;
   if (db) {
     // Merge into the current row within a transaction, including fields introduced
     // by other pages or tabs that this shell does not edit.
     const tx = db.transaction(stores.kv, "readwrite");
     const current = await tx.store.get(prefsKey);
-    await tx.store.put({ ...mergeDefaults(current), ...patch }, prefsKey);
+    const prefs = mergeDefaults(current);
+    await tx.store.put(
+      { ...prefs, ...(typeof patch === "function" ? patch(prefs) : patch) },
+      prefsKey,
+    );
     await tx.done;
   } else {
-    memoryPrefs = { ...memoryPrefs, ...patch };
+    memoryPrefs = {
+      ...memoryPrefs,
+      ...(typeof patch === "function" ? patch(memoryPrefs) : patch),
+    };
   }
   events.dispatchEvent(new Event(stores.kv));
   storeChanges?.postMessage(stores.kv);

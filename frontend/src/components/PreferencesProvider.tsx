@@ -14,6 +14,7 @@ import { readString, storageKeys, writeString } from "../lib/storage-keys";
 const Context = createContext<{
   prefs: Preferences;
   persistent: boolean;
+  ready: boolean;
   update: typeof updatePreferences;
 } | null>(null);
 
@@ -66,7 +67,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     if (ready) writeString(storageKeys.theme, theme);
   }, [theme, systemDark, textSize, reducedMotion, ready]);
   return (
-    <Context.Provider value={{ ...state, update: updatePreferences }}>
+    <Context.Provider value={{ ...state, ready, update: updatePreferences }}>
       {children}
     </Context.Provider>
   );
