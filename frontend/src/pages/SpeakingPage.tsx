@@ -164,13 +164,11 @@ function buildDrill(
         answers: [sentence],
       }));
     case "repeat":
-      return sentences
-        .slice(0, 6)
-        .map((sentence, i) => ({
-          id: `${prefix}:${i}`,
-          type: "speak",
-          text: sentence,
-        }));
+      return sentences.slice(0, 6).map((sentence, i) => ({
+        id: `${prefix}:${i}`,
+        type: "speak",
+        text: sentence,
+      }));
     case "read": {
       const passages = lessons
         .flatMap((lesson) =>

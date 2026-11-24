@@ -58,7 +58,15 @@ async function captureOnce(browser, base, page, v) {
   const errors = [];
   const api = [];
   tab.on("pageerror", (e) => errors.push(String(e)));
-  tab.on("console", (m) => m.type() === "error" && errors.push(m.text()));
+  // The Worker sends a Content-Security-Policy header and vite preview does not, so
+  // CSP violation reports (blocked inline handlers) only appear on the reference.
+  tab.on(
+    "console",
+    (m) =>
+      m.type() === "error" &&
+      !m.text().includes("Content Security Policy") &&
+      errors.push(m.text()),
+  );
   await mockApi(tab, api, page.api ?? {});
   if (page.init) await tab.addInitScript(page.init);
   await seedSavedProfile(tab, base, v.color, v.locale);

@@ -138,3 +138,18 @@ export function revisionTopics(rows: ExerciseResult[], now = new Date()) {
     .sort((a, b) => a.accuracy - b.accuracy)
     .slice(0, 5);
 }
+
+/** Short notes about recent wrong answers, sent to the tutor as context. */
+export function mistakeNotes(
+  rows: { correct: boolean; given?: string; expected?: string }[],
+  limit = 5,
+) {
+  return rows
+    .filter((row) => !row.correct && row.expected)
+    .slice(0, limit)
+    .map((row) =>
+      row.given
+        ? `wrote "${row.given.slice(0, 60)}" instead of "${row.expected!.slice(0, 60)}"`
+        : `needed "${row.expected!.slice(0, 60)}"`,
+    );
+}

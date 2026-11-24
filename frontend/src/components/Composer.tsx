@@ -24,18 +24,23 @@ export function Suggestion({
   icon: Icon,
   children,
   onClick,
+  disabled,
 }: {
-  icon: LucideIcon;
+  icon?: LucideIcon;
   children: React.ReactNode;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm text-text/90 transition-colors hover:border-border-strong hover:bg-surface-2 disabled:opacity-50"
     >
-      <Icon aria-hidden className="size-4 shrink-0 text-primary-text" />
+      {Icon && (
+        <Icon aria-hidden className="size-4 shrink-0 text-primary-text" />
+      )}
       <span className="text-start">{children}</span>
     </button>
   );
