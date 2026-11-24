@@ -1,3 +1,4 @@
+import { learnerDatabase } from "../lib/storage-keys";
 import { useEffect, useId, useRef, useState } from "react";
 import {
   Link,
@@ -132,7 +133,11 @@ function Links({
 function RecentChats({ onNavigate }: { onNavigate?: () => void }) {
   const t = useTranslate();
   const { prefs } = usePreferences();
-  const rows = useStoredValue("conversations", recentTutorChats, []);
+  const rows = useStoredValue(
+    learnerDatabase.stores.conversations,
+    recentTutorChats,
+    [],
+  );
   const { pathname } = useLocation(),
     [query] = useSearchParams();
   if (!prefs.saveConversations || !rows.length) return null;
@@ -202,7 +207,11 @@ function ProfileMenu({
 }) {
   const t = useTranslate(),
     { prefs } = usePreferences();
-  const minutes = useStoredValue("activities", minutesToday, 0);
+  const minutes = useStoredValue(
+    learnerDatabase.stores.activities,
+    minutesToday,
+    0,
+  );
   const [open, setOpen] = useState(false),
     panel = useRef<HTMLDivElement>(null),
     button = useRef<HTMLButtonElement>(null),

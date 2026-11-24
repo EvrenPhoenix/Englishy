@@ -1,6 +1,9 @@
 import { openDB } from "idb";
 import { defaultPreferences, type Preferences } from "./preferences";
 
+import { learnerDatabase } from "./storage-keys";
+
+const { stores, keyPaths, indexes, prefsKey } = learnerDatabase;
 const storeChanges =
   typeof BroadcastChannel === "function"
     ? new BroadcastChannel("linguanest-store")
@@ -18,28 +21,32 @@ async function openLearnerDatabase() {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     return await Promise.race([
-      openDB("linguanest", 2, {
+      openDB(learnerDatabase.name, learnerDatabase.version, {
         upgrade(db, oldVersion, _newVersion, tx) {
-          if (oldVersion < 1) {
-            db.createObjectStore("kv");
-            db.createObjectStore("lessons", { keyPath: "lessonId" });
-            db.createObjectStore("activities", { keyPath: "id" }).createIndex(
-              "by-day",
-              "day",
-            );
-            db.createObjectStore("vocab", { keyPath: "id" }).createIndex(
-              "by-due",
-              "srs.due",
-            );
-            db.createObjectStore("conversations", { keyPath: "id" });
+          if (oldVersion < learnerDatabase.initialVersion) {
+            db.createObjectStore(stores.kv);
+            db.createObjectStore(stores.lessons, { keyPath: keyPaths.lessons });
+            db.createObjectStore(stores.activities, {
+              keyPath: keyPaths.activities,
+            }).createIndex(...indexes.activities.day);
+            db.createObjectStore(stores.vocab, {
+              keyPath: keyPaths.vocab,
+            }).createIndex(...indexes.vocab.due);
+            db.createObjectStore(stores.conversations, {
+              keyPath: keyPaths.conversations,
+            });
           }
           if (oldVersion < 2) {
-            const results = db.createObjectStore("results", { keyPath: "id" });
-            results.createIndex("by-lesson", "lessonId");
-            results.createIndex("by-at", "at");
-            tx.objectStore("activities").createIndex("by-type", "type");
-            const kv = tx.objectStore("kv");
-            void kv.get("prefs").then((prefs) => {
+            const results = db.createObjectStore(stores.results, {
+              keyPath: keyPaths.results,
+            });
+            results.createIndex(...indexes.results.lesson);
+            results.createIndex(...indexes.results.at);
+            tx.objectStore(stores.activities).createIndex(
+              ...indexes.activities.type,
+            );
+            const kv = tx.objectStore(stores.kv);
+            void kv.get(prefsKey).then((prefs) => {
               if (
                 prefs &&
                 "dailyGoal" in prefs &&
@@ -48,14 +55,11 @@ async function openLearnerDatabase() {
                 const { dailyGoal, ...rest } = prefs;
                 return kv.put(
                   { ...rest, dailyGoalMinutes: dailyGoal },
-                  "prefs",
+                  prefsKey,
                 );
               }
             });
           }
-        },
-        blocking(_current, _next, event) {
-          (event.target as IDBDatabase).close();
         },
       }),
       new Promise<null>((resolve) => {
@@ -82,7 +86,7 @@ export async function loadPreferences() {
   const db = await database;
   return {
     persistent: Boolean(db),
-    prefs: mergeDefaults(await db?.get("kv", "prefs")),
+    prefs: mergeDefaults(await db?.get(stores.kv, prefsKey)),
   };
 }
 export async function updatePreferences(patch: Partial<Preferences>) {
@@ -90,15 +94,15 @@ export async function updatePreferences(patch: Partial<Preferences>) {
   if (db) {
     // Merge into the current row within a transaction, including fields introduced
     // by other pages or tabs that this shell does not edit.
-    const tx = db.transaction("kv", "readwrite");
-    const current = await tx.store.get("prefs");
-    await tx.store.put({ ...mergeDefaults(current), ...patch }, "prefs");
+    const tx = db.transaction(stores.kv, "readwrite");
+    const current = await tx.store.get(prefsKey);
+    await tx.store.put({ ...mergeDefaults(current), ...patch }, prefsKey);
     await tx.done;
   } else {
     memoryPrefs = { ...memoryPrefs, ...patch };
   }
-  events.dispatchEvent(new Event("kv"));
-  storeChanges?.postMessage("kv");
+  events.dispatchEvent(new Event(stores.kv));
+  storeChanges?.postMessage(stores.kv);
 }
 
 interface ChatSummary {
@@ -109,7 +113,7 @@ interface ChatSummary {
 }
 export async function recentTutorChats(): Promise<ChatSummary[]> {
   const rows: ChatSummary[] =
-    (await (await database)?.getAll("conversations")) ?? [];
+    (await (await database)?.getAll(stores.conversations)) ?? [];
   return rows
     .filter((row) => row.kind === "tutor")
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
@@ -123,7 +127,9 @@ export async function minutesToday() {
     String(date.getDate()).padStart(2, "0"),
   ].join("-");
   const rows: { durationSec: number }[] =
-    (await (await database)?.getAllFromIndex("activities", "by-day", today)) ??
+    (await (
+      await database
+    )?.getAllFromIndex(stores.activities, indexes.activities.day[0], today)) ??
     [];
   return Math.round(
     rows.reduce((seconds, row) => seconds + row.durationSec, 0) / 60,

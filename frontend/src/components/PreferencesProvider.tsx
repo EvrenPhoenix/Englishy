@@ -1,3 +1,4 @@
+import { learnerDatabase } from "../lib/storage-keys";
 import {
   createContext,
   useContext,
@@ -38,7 +39,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
       }
     }
     void refresh();
-    const unsubscribe = subscribe("kv", refresh);
+    const unsubscribe = subscribe(learnerDatabase.stores.kv, refresh);
     return () => {
       revision++;
       unsubscribe();
