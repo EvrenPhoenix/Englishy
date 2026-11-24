@@ -1246,6 +1246,260 @@ for (const id of [
 ])
   pages["Scenario:" + id] = { path: "/conversation/" + id, ready: h1 };
 
+// Same pseudo-random sequence in both builds (confetti, flashcard order).
+const seededRandom = () => {
+  let a = 1234567;
+  Math.random = () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+// A saved in-progress lesson: `index` is the current question, earlier ones answered.
+const lessonDraft =
+  (lessonId, count, index, correct, extra = {}) =>
+  async (p) => {
+    await p.evaluate(
+      ({ lessonId, count, index, correct, extra }) => {
+        const ids = Array.from(
+          { length: count },
+          (_, i) => `${lessonId}:${i + 1}`,
+        );
+        const outcomes = {};
+        ids.slice(0, index).forEach((id) => {
+          outcomes[id] = correct
+            ? { correct: true, given: "ok", expected: "ok" }
+            : { correct: false, given: "nope", expected: "the answer" };
+        });
+        Object.assign(outcomes, extra);
+        localStorage.setItem(
+          "ln-lesson-draft:" + lessonId,
+          JSON.stringify({
+            version: 1,
+            index,
+            exerciseIds: ids.join("|"),
+            outcomes,
+          }),
+        );
+      },
+      { lessonId, count, index, correct, extra },
+    );
+  };
+const skipQuestion = (p) => p.locator("main .border-t.pt-4 button").click();
+const lessonReady = (p) =>
+  p.locator("main h1, main section[aria-label]").first().waitFor();
+Object.assign(pages, {
+  "Lesson-intro": { path: "/learn/pa1-alphabet", ready: h1 },
+  "Lesson-intro-greetings": { path: "/learn/pa1-greetings", ready: h1 },
+  "Lesson-intro-a1": { path: "/learn/a1-be-positive", ready: h1 },
+  "Lesson-missing": {
+    path: "/learn/no-such-lesson",
+    ready: (p) => p.locator("main .border-dashed").waitFor(),
+  },
+  "Lesson-explain": {
+    path: "/learn/pa1-alphabet",
+    ready: h1,
+    api: {
+      explain: {
+        sse: ["The alphabet has **26** letters.\n", "Vowels: a, e, i, o, u."],
+      },
+    },
+    act: async (p) => {
+      await p.locator("main .card button.bg-primary-soft").first().click();
+      await p.locator("main .whitespace-pre-wrap").waitFor();
+    },
+  },
+  "Lesson-practice": {
+    path: "/learn/pa1-alphabet",
+    ready: h1,
+    act: async (p) => {
+      await p.locator("main .sticky.bottom-4 button").click();
+      await p.locator("main section[aria-label]").waitFor();
+    },
+  },
+  "Lesson-resume": {
+    path: "/learn/pa1-alphabet",
+    ready: lessonReady,
+    seed: lessonDraft("pa1-alphabet", 9, 3, true),
+  },
+  "Lesson-resume-answered": {
+    path: "/learn/pa1-alphabet",
+    ready: lessonReady,
+    seed: lessonDraft("pa1-alphabet", 9, 3, false, {
+      "pa1-alphabet:4": { correct: false, given: "B", expected: "A" },
+    }),
+  },
+  "Lesson-stale-draft": {
+    path: "/learn/pa1-alphabet",
+    ready: lessonReady,
+    seed: lessonDraft("pa1-alphabet", 8, 3, true),
+  },
+  "Lesson-practised": {
+    path: "/learn/pa1-alphabet",
+    ready: lessonReady,
+    seed: lessonDraft("pa1-alphabet", 9, 8, false),
+    act: async (p) => {
+      await skipQuestion(p);
+      await p.locator("#summary-title").waitFor();
+    },
+  },
+  "Lesson-passed": {
+    path: "/learn/pa1-alphabet",
+    ready: lessonReady,
+    init: seededRandom,
+    seed: lessonDraft("pa1-alphabet", 9, 8, true),
+    act: async (p) => {
+      await skipQuestion(p);
+      await p.locator("#summary-title").waitFor();
+    },
+  },
+  "Lesson-passed-words": {
+    path: "/learn/pa1-greetings",
+    ready: lessonReady,
+    init: seededRandom,
+    seed: lessonDraft("pa1-greetings", 8, 7, true),
+    act: async (p) => {
+      await skipQuestion(p);
+      await p.locator("#summary-title").waitFor();
+      await p.locator("main .card button.bg-primary-soft").first().click();
+    },
+  },
+});
+
+// Answer the current exercise in a type-agnostic way, then continue.
+async function answerAnything(p, n = 0) {
+  const card = p.locator("main section[aria-label]");
+  const radios = card.locator(
+    '[role=radiogroup]:not([aria-label="Playback speed"]) button',
+  );
+  const input = card.locator("input:not([type=checkbox])");
+  const textarea = card.locator("textarea");
+  if (await radios.count()) {
+    await radios.nth(n % (await radios.count())).click();
+    await card
+      .locator("button.sm\\:min-w-40, button.sm\\:min-w-40[type=submit]")
+      .first()
+      .click();
+  } else if (await input.count()) {
+    await input.fill(n % 2 ? "wrong" : "a");
+    await input.press("Enter");
+    const almost = await card.locator(".bg-warning-soft").count();
+    if (almost)
+      await card
+        .locator("button[type=submit]")
+        .click()
+        .catch(() => {});
+  } else if (await textarea.count()) {
+    await card.locator(".border-t.pt-4 button").click();
+    return;
+  } else {
+    await card.locator(".border-t.pt-4 button").click();
+    return;
+  }
+  const feedback = card.locator(
+    "[aria-live=polite][role=status] button.sm\\:min-w-40",
+  );
+  if (await feedback.count()) await feedback.click();
+  else await card.locator(".border-t.pt-4 button").click();
+}
+Object.assign(pages, {
+  "Lesson-open-new": { path: "/learn/a1-be-positive", ready: h1 },
+  "Lesson-partial-run": {
+    path: "/learn/pa1-greetings",
+    ready: h1,
+    act: async (p) => {
+      await p.locator("main .sticky.bottom-4 button").click();
+      for (let i = 0; i < 4; i++) {
+        await p.locator("main section[aria-label]").waitFor();
+        await answerAnything(p, i);
+        await p.waitForTimeout(150);
+      }
+    },
+  },
+  "Lesson-full-run": {
+    path: "/learn/pa1-greetings",
+    ready: h1,
+    act: async (p) => {
+      await p.locator("main .sticky.bottom-4 button").click();
+      for (let i = 0; i < 20; i++) {
+        if (await p.locator("#summary-title").count()) break;
+        await answerAnything(p, i);
+        await p.waitForTimeout(150);
+      }
+      await p.locator("#summary-title").waitFor();
+    },
+  },
+  "Lesson-retry-after-pass": {
+    path: "/learn/pa1-alphabet",
+    ready: lessonReady,
+    init: seededRandom,
+    seed: lessonDraft("pa1-alphabet", 9, 8, true),
+    act: async (p) => {
+      await skipQuestion(p);
+      await p.locator("#summary-title").waitFor();
+      await p.locator("main .mt-7 button").click();
+      await p.locator("main section[aria-label]").waitFor();
+    },
+  },
+});
+
+export const lessonExerciseCounts = {
+  "a1-be-positive": 9,
+  "a1-be-negative": 9,
+  "a1-articles": 8,
+  "a1-plurals": 9,
+  "a1-have": 8,
+  "a1-adjectives": 7,
+  "a1-time": 9,
+  "a1-dates": 8,
+  "a1-present-simple": 9,
+  "a1-present-simple-questions": 9,
+  "a1-routines": 7,
+  "a1-common-verbs": 7,
+  "a1-weather": 7,
+  "a1-places": 8,
+  "a1-prepositions": 8,
+  "a1-directions": 8,
+  "a1-transport": 8,
+  "a1-shopping": 8,
+  "a1-present-continuous": 9,
+  "a1-questions": 9,
+  "a1-negatives": 8,
+  "a1-past-be": 8,
+  "a1-past-simple": 9,
+  "a1-future": 8,
+  "a1-reading": 6,
+  "a1-everyday-conversation": 8,
+  "pa1-alphabet": 9,
+  "pa1-sounds": 8,
+  "pa1-greetings": 8,
+  "pa1-introductions": 9,
+  "pa1-polite": 8,
+  "pa1-numbers-20": 9,
+  "pa1-numbers-100": 8,
+  "pa1-colours": 8,
+  "pa1-objects": 8,
+  "pa1-pronouns": 8,
+  "pa1-family": 9,
+  "pa1-days": 8,
+  "pa1-months": 8,
+  "pa1-food": 9,
+  "pa1-clothes": 8,
+  "pa1-body": 8,
+  "pa1-help": 8,
+};
+for (const [id, count] of Object.entries(lessonExerciseCounts)) {
+  pages["LessonIntro:" + id] = { path: "/learn/" + id, ready: h1 };
+  // Every exercise, reached by resuming a draft at that question.
+  for (let i = 0; i < count; i++)
+    pages[`Exercise:${id}:${i + 1}`] = {
+      path: "/learn/" + id,
+      ready: (p) => p.locator("main section[aria-label]").waitFor(),
+      seed: lessonDraft(id, count, i, true),
+    };
+}
+
 const grammarIds = [
   "parts-of-speech",
   "nouns",

@@ -2,11 +2,13 @@
 // shape and the bank:<id> identities are part of the stored data format.
 import type { Level } from "../../../shared/constants";
 import type { VocabularyWord } from "../data/types";
+import { vocabulary } from "../data/vocabulary";
 import { learnerDb, notifyStore } from "./database";
 import { learnerDatabase } from "./storage-keys";
 
 const { stores } = learnerDatabase;
 const DAY_MS = 86_400_000;
+const bankById = new Map(vocabulary.map((entry) => [entry.id, entry]));
 
 export interface Srs {
   ease: number;
@@ -114,6 +116,14 @@ export async function saveWord(word: SavedWord) {
   await (await learnerDb())?.put(stores.vocab, word);
   notifyStore(stores.vocab);
 }
+export async function saveWords(words: SavedWord[]) {
+  const db = await learnerDb();
+  if (db && words.length) {
+    const tx = db.transaction(stores.vocab, "readwrite");
+    await Promise.all([...words.map((word) => tx.store.put(word)), tx.done]);
+  }
+  notifyStore(stores.vocab);
+}
 export async function removeWord(id: string) {
   await (await learnerDb())?.delete(stores.vocab, id);
   notifyStore(stores.vocab);
@@ -145,3 +155,6 @@ export function wordFromBank(
     srs: newSrs(),
   };
 }
+
+/** A word bank entry by id. */
+export const findBankWord = (id: string) => bankById.get(id);
