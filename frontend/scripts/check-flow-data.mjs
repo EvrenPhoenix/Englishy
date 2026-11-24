@@ -36,6 +36,7 @@ async function run(browser, base, page) {
   await mockApi(tab, [], page.api ?? {});
   if (page.init) await tab.addInitScript(page.init);
   await seedSavedProfile(tab, base);
+  if (page.seed) await page.seed(tab, base);
   await tab.goto(base + page.path);
   if (page.ready) await page.ready(tab);
   if (page.act) await page.act(tab);

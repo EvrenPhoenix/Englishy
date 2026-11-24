@@ -26,6 +26,9 @@ const badgeTones = {
   accent: "bg-accent-soft text-accent",
   success: "bg-success-soft text-success",
   neutral: "bg-surface-2 text-muted",
+  warning: "bg-warning-soft text-warning",
+  danger: "bg-danger-soft text-danger",
+  indigo: "bg-indigo-soft text-indigo",
 };
 export function Badge({
   icon: Icon,
@@ -55,10 +58,12 @@ export function EmptyState({
   icon: Icon,
   title,
   children,
+  action,
 }: {
   icon: LucideIcon;
   title: string;
   children: ReactNode;
+  action?: ReactNode;
 }) {
   return (
     <div className="flex flex-col items-center rounded-3xl border border-dashed border-border-strong px-6 py-12 text-center">
@@ -70,6 +75,7 @@ export function EmptyState({
       </span>
       <p className="font-semibold">{title}</p>
       <div className="mt-1 max-w-md text-sm text-muted">{children}</div>
+      {action && <div className="mt-5">{action}</div>}
     </div>
   );
 }
