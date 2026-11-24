@@ -3,7 +3,11 @@ import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const frontend = fileURLToPath(new URL("../frontend-compiled/", import.meta.url));
+// The built frontend (frontend/dist, produced by `npm run build`). Set FRONTEND_DIR to
+// embed another build, e.g. FRONTEND_DIR=frontend-compiled for the recovered release.
+const frontend = fileURLToPath(
+  new URL(`../${process.env.FRONTEND_DIR ?? "frontend/dist"}/`, import.meta.url),
+);
 const output = new URL("../dist/embedded/", import.meta.url);
 const types = new Map([
   [".css", "text/css; charset=utf-8"],
@@ -43,8 +47,9 @@ await collect();
 
 const index = files["/index.html"]?.s;
 const entry = index?.match(/<script\b[^>]*\btype="module"[^>]*\bsrc="(\/assets\/[^"]+)"/)?.[1];
-if (!entry || !files[entry]) throw new Error("Missing compiled frontend entry referenced by index.html");
-if (!files["/sw.js"] || !files["/offline.html"]) throw new Error("Missing offline frontend files");
+if (!entry || !files[entry]) throw new Error("Missing frontend entry referenced by index.html");
+if (!files["/sw.js"] || !files["/offline.html"] || !files["/theme-init.js"])
+  throw new Error("Missing offline frontend files");
 const assetRoot = "/assets/";
 const releaseRoot = entry.slice(0, entry.lastIndexOf("/") + 1);
 const aliases = [];
