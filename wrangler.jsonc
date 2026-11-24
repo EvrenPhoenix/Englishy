@@ -4,7 +4,7 @@
   "main": "deploy/embedded-worker.ts",
   "compatibility_date": "2026-11-19",
   "build": {
-    "command": "node scripts/build-embedded.mjs"
+    "command": "npm run build"
   },
   "observability": {
     "enabled": true,

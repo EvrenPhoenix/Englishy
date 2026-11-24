@@ -1,0 +1,232 @@
+import type { Guide } from "./types";
+
+export const guides: Guide[] = [
+  {
+    slug: "learn-english-for-beginners",
+    short: "English for beginners",
+    title: "Learn English for beginners: where to start",
+    description:
+      "A practical plan for absolute beginners: the first sounds, words and phrases to learn, and how to practise a little every day.",
+    intro:
+      "Starting a new language from zero can feel big. The good news: a small set of words and phrases lets you do a lot. Here is a simple order that works for most beginners.",
+    sections: [
+      {
+        heading: "1. Letters and sounds first",
+        paragraphs: [
+          "Learn the 26 letters and their names, then the short vowel sounds in words like cat, bed, sit, hot and cup. English spelling is not always regular, so listen to words as well as reading them.",
+        ],
+      },
+      {
+        heading: "2. Survival phrases",
+        paragraphs: [
+          "These phrases help in every situation, even when you know very little:",
+        ],
+        list: [
+          "Hello / Goodbye",
+          "Please / Thank you / Sorry",
+          "Sorry, I don't understand.",
+          "Can you speak more slowly, please?",
+          "What does … mean?",
+          "Can you help me, please?",
+        ],
+      },
+      {
+        heading: "3. Talk about yourself",
+        paragraphs: [
+          "Next, learn to say your name, where you are from, your age and what you like: My name is… I'm from… I'm 25. I like…",
+        ],
+      },
+      {
+        heading: "4. A little every day",
+        paragraphs: [
+          "Ten minutes every day is usually more effective than one long session a week. Review new words a day later, then a few days later. Missing a day is fine: just continue.",
+        ],
+      },
+      {
+        heading: "5. Mistakes are normal",
+        paragraphs: [
+          "Everyone makes mistakes when learning a language. Speak and write anyway. Feedback on real attempts is how you improve.",
+        ],
+      },
+    ],
+    cta: { label: "Start the free Pre-A1 course", to: "/start" },
+  },
+  {
+    slug: "english-grammar",
+    short: "English grammar",
+    title: "English grammar explained simply",
+    description:
+      "The most important English grammar for beginners — be, have, the present simple, questions and the past — with clear examples.",
+    intro:
+      "You do not need to know every rule to communicate. These grammar points give you the most value at the beginning.",
+    sections: [
+      {
+        heading: 'The verb "to be"',
+        paragraphs: [
+          "I am, you are, he/she/it is, we/they are. Use it for names, jobs, age and descriptions: She is a nurse. We are tired.",
+        ],
+      },
+      {
+        heading: "Present simple for habits",
+        paragraphs: [
+          "I work, she works. Add -s for he, she and it. Use do/does for questions and negatives: Do you work here? He doesn't eat meat.",
+        ],
+      },
+      {
+        heading: "Present continuous for now",
+        paragraphs: [
+          "am/is/are + -ing for actions happening now: I'm reading. It's raining.",
+        ],
+      },
+      {
+        heading: "Past simple for finished actions",
+        paragraphs: [
+          "Regular verbs add -ed (worked, played). Many common verbs are irregular: go → went, have → had, see → saw. Use did for questions and negatives: Did you see it? I didn't go.",
+        ],
+      },
+      {
+        heading: "Articles",
+        paragraphs: [
+          "Use a/an for one thing mentioned for the first time, the for something specific that we both know, and no article for things in general: I like music.",
+        ],
+      },
+    ],
+    cta: { label: "Open the grammar library", to: "/grammar" },
+  },
+  {
+    slug: "english-vocabulary",
+    short: "English vocabulary",
+    title: "How to learn and remember English vocabulary",
+    description:
+      "Learn English words in useful groups, with example sentences and spaced repetition, so you remember them for longer.",
+    intro:
+      "Knowing a word means more than knowing a translation. You need its meaning, how it sounds, and the words it often goes with.",
+    sections: [
+      {
+        heading: "Learn words in groups",
+        paragraphs: [
+          "Learn words by topic (food, travel, work) and with their partners: make a mistake, do homework, a cup of tea. These partners are called collocations.",
+        ],
+      },
+      {
+        heading: "Always learn an example sentence",
+        paragraphs: [
+          "A sentence shows how a word is really used. Say it aloud.",
+        ],
+      },
+      {
+        heading: "Use spaced repetition",
+        paragraphs: [
+          "Review a new word after a day, then after a few days, then after a week or more. If you forget it, see it again sooner. Englishy schedules this for you using the SM-2 method.",
+        ],
+      },
+      {
+        heading: "Use new words quickly",
+        paragraphs: [
+          "Use a new word in a message, a conversation or a short piece of writing within a day or two.",
+        ],
+      },
+    ],
+    cta: { label: "Explore the vocabulary notebook", to: "/vocabulary" },
+  },
+  {
+    slug: "english-conversation-practice",
+    short: "Conversation practice",
+    title: "English conversation practice for real situations",
+    description:
+      "Practise ordering food, asking for directions, phone calls and job interviews with an AI role-play partner, at your own speed.",
+    intro:
+      "Speaking feels easier when you have practised the situation before. Role-play gives you that rehearsal without pressure.",
+    sections: [
+      {
+        heading: "Choose a real situation",
+        paragraphs: [
+          "Start with situations you will meet soon: introducing yourself, ordering food, shopping or asking for directions.",
+        ],
+      },
+      {
+        heading: "Useful phrases to keep a conversation going",
+        list: [
+          "Really? That sounds great!",
+          "What about you?",
+          "Sorry, could you say that again?",
+          "What do you mean by…?",
+          "Anyway, it was nice talking to you.",
+        ],
+      },
+      {
+        heading: "Get feedback after, not during",
+        paragraphs: [
+          "When you are focusing on fluency, choose feedback at the end of the conversation. When you are focusing on accuracy, choose immediate corrections.",
+        ],
+      },
+    ],
+    cta: { label: "Start a conversation", to: "/conversation" },
+  },
+  {
+    slug: "common-english-mistakes",
+    short: "Common mistakes",
+    title: "Common English mistakes and how to fix them",
+    description:
+      'Ten common English mistakes beginners make — like "I have 20 years" or "He don\'t" — with simple explanations and corrections.',
+    intro:
+      "These mistakes are very common, and they are easy to fix once you notice them.",
+    sections: [
+      {
+        heading: "Ten frequent mistakes",
+        list: [
+          "I have 20 years. → I am 20 (years old).",
+          "He don't like it. → He doesn't like it.",
+          "She can speaks French. → She can speak French.",
+          "I am agree. → I agree.",
+          "Yesterday I go to the shop. → Yesterday I went to the shop.",
+          "I like the music. (in general) → I like music.",
+          "Where you live? → Where do you live?",
+          "People is friendly. → People are friendly.",
+          "I didn't went. → I didn't go.",
+          "Explain me, please. → Explain it to me, please.",
+        ],
+      },
+      {
+        heading: "Different, not wrong",
+        paragraphs: [
+          "Some differences are not mistakes: colour/color, flat/apartment, have got/have. British and American English are both correct.",
+        ],
+      },
+    ],
+    cta: {
+      label: "See the full list in the grammar library",
+      to: "/grammar/common-mistakes",
+    },
+  },
+  {
+    slug: "english-writing-practice",
+    short: "Writing practice",
+    title: "English writing practice with clear feedback",
+    description:
+      "Improve your English writing with feedback that separates real grammar mistakes from optional style suggestions.",
+    intro:
+      "Writing is a great way to practise because you have time to think. Good feedback shows you what is wrong and what is just a different choice.",
+    sections: [
+      {
+        heading: "Start short",
+        paragraphs: [
+          "Write three to five sentences about your day, a message to a friend, or a short email. Short texts are easier to review carefully.",
+        ],
+      },
+      {
+        heading: "Errors versus improvements",
+        paragraphs: [
+          "A grammar error needs fixing (She go → She goes). A style suggestion is optional (very big → huge). Focus on errors first.",
+        ],
+      },
+      {
+        heading: "Rewrite it yourself",
+        paragraphs: [
+          "After feedback, write the text again without looking. This helps you remember the corrections.",
+        ],
+      },
+    ],
+    cta: { label: "Open the writing assistant", to: "/writing" },
+  },
+];
