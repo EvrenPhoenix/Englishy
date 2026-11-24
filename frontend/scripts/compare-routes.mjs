@@ -243,4 +243,67 @@ export const pages = {
       await p.waitForURL(/\/home$/);
     },
   },
+  GrammarTopic: { path: "/grammar/present-simple", ready: h1 },
+  "GrammarTopic-details": {
+    path: "/grammar/articles",
+    ready: h1,
+    act: (p) => p.locator("main button[aria-expanded]").click(),
+  },
+  "GrammarTopic-practice": {
+    path: "/grammar/present-simple",
+    ready: h1,
+    act: (p) => p.locator("#practice-h + button").click(),
+  },
+  "GrammarTopic-answered": {
+    path: "/grammar/articles",
+    ready: h1,
+    act: async (p) => {
+      await p.locator("#practice-h + button").click();
+      const card = p.locator("main section .card");
+      await card.locator("button, input").first().waitFor();
+      const input = card.locator("input");
+      if (await input.count()) {
+        await input.fill("wrong answer");
+        await input.press("Enter");
+      } else {
+        await pick(p, 0);
+        await check(p);
+      }
+      await p.locator("main [aria-live=polite][role=status]").last().waitFor();
+    },
+  },
+  "GrammarTopic-missing": {
+    path: "/grammar/no-such-topic",
+    ready: (p) => p.locator("main .border-dashed").waitFor(),
+  },
 };
+const grammarIds = [
+  "parts-of-speech",
+  "nouns",
+  "pronouns",
+  "articles",
+  "adjectives",
+  "adverbs",
+  "verbs",
+  "verb-to-be",
+  "auxiliary-verbs",
+  "modal-verbs",
+  "present-simple",
+  "present-continuous",
+  "past-tenses",
+  "future",
+  "continuous-tenses",
+  "perfect-tenses",
+  "conditionals",
+  "passive-voice",
+  "reported-speech",
+  "relative-clauses",
+  "prepositions",
+  "conjunctions",
+  "questions",
+  "sentence-structure",
+  "punctuation",
+  "common-mistakes",
+];
+for (const id of grammarIds)
+  pages["Grammar:" + id] = { path: "/grammar/" + id, ready: h1 };

@@ -22,6 +22,9 @@ const ProgressPage = lazy(async () => ({
 const GrammarPage = lazy(async () => ({
   default: (await import("./pages/GrammarPage")).GrammarPage,
 }));
+const GrammarTopicPage = lazy(async () => ({
+  default: (await import("./pages/GrammarTopicPage")).GrammarTopicPage,
+}));
 const Settings = lazy(async () => ({
   default: (await import("./pages/Settings")).Settings,
 }));
@@ -57,10 +60,7 @@ export const router = createBrowserRouter([
         element: pages[id] ?? <Placeholder message={`nav.${id}`} />,
       })),
       { path: "/learn/:lessonId", element: <Placeholder title="Lesson" /> },
-      {
-        path: "/grammar/:topicId",
-        element: <Placeholder title="Grammar topic" />,
-      },
+      { path: "/grammar/:topicId", element: <GrammarTopicPage /> },
       {
         path: "/conversation/:scenarioId",
         element: <Placeholder title="Conversation" />,

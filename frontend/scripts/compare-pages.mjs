@@ -26,6 +26,12 @@ const variants = [
   { w: 390, h: 844, color: "light", locale: "ar" },
 ];
 
+// VARIANTS=0,2 limits captures to those variant indexes (default: all five).
+const only = process.env.VARIANTS?.split(",").map(Number);
+const activeVariants = only
+  ? variants.filter((_, i) => only.includes(i))
+  : variants;
+
 const NO_MOTION = `*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important;scroll-behavior:auto!important}`;
 
 async function capture(browser, base, page, v, attempt = 0) {
@@ -117,7 +123,7 @@ let failed = 0;
 for (const name of names) {
   const page = pages[name];
   if (!page) throw new Error("Unknown page " + name);
-  for (const v of variants) {
+  for (const v of activeVariants) {
     const tag = `${name}-${v.w}-${v.color}-${v.locale}`;
     let [ref, neu] = await Promise.all([
       capture(browser, REF, page, v),
