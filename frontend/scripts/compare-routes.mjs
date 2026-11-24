@@ -686,6 +686,74 @@ Object.assign(pages, {
   },
 });
 
+const noSpeech = () => {
+  delete window.speechSynthesis;
+  delete window.SpeechSynthesisUtterance;
+  delete window.SpeechRecognition;
+  delete window.webkitSpeechRecognition;
+};
+const startDrill = (n) => (p) => p.locator("main .card-hover").nth(n).click();
+Object.assign(pages, {
+  Speaking: { path: "/speaking", ready: h1 },
+  "Speaking-speak": { path: "/speaking?tab=speak", ready: h1 },
+  "Speaking-no-speech": { path: "/speaking", ready: h1, init: noSpeech },
+  "Speaking-speak-no-speech": {
+    path: "/speaking?tab=speak",
+    ready: h1,
+    init: noSpeech,
+  },
+  "Speaking-words": { path: "/speaking", ready: h1, act: startDrill(0) },
+  "Speaking-complete": { path: "/speaking", ready: h1, act: startDrill(1) },
+  "Speaking-dictation": { path: "/speaking", ready: h1, act: startDrill(2) },
+  "Speaking-repeat": {
+    path: "/speaking?tab=speak",
+    ready: h1,
+    act: startDrill(0),
+  },
+  "Speaking-read": {
+    path: "/speaking?tab=speak",
+    ready: h1,
+    act: startDrill(1),
+  },
+  "Speaking-dictation-no-audio": {
+    path: "/speaking",
+    ready: h1,
+    init: noSpeech,
+    act: startDrill(2),
+  },
+  "Speaking-mic-consent": {
+    path: "/speaking?tab=speak",
+    ready: h1,
+    viewportOnly: true,
+    act: async (p) => {
+      await startDrill(0)(p);
+      await p.evaluate(() => localStorage.removeItem("ln-mic-consent"));
+      await p.locator("main .card button.bg-primary").first().click();
+      await p.locator("dialog[open]").waitFor();
+    },
+  },
+  "Speaking-words-finished": {
+    path: "/speaking",
+    ready: h1,
+    act: async (p) => {
+      await startDrill(0)(p);
+      for (let i = 0; i < 8; i++) await answerMc(p, i % 3);
+      await p.locator("main .card .text-lg").waitFor();
+    },
+  },
+  "Speaking-new-set": {
+    path: "/speaking",
+    ready: h1,
+    act: async (p) => {
+      await startDrill(1)(p);
+      await p
+        .locator("main > div > button.mt-4, main button.mt-4.text-sm")
+        .last()
+        .click();
+    },
+  },
+});
+
 const grammarIds = [
   "parts-of-speech",
   "nouns",

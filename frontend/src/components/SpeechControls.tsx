@@ -51,7 +51,7 @@ export function ListenButton({
     return revealFallback ? (
       <p className="rounded-lg bg-surface-2 px-3 py-2 text-sm">
         <span className="text-muted">
-          Audio is not available on this device. Text:{" "}
+          {"Audio is not available on this device. Text: "}
         </span>
         <strong>{text}</strong>
         {onUnavailable && (
