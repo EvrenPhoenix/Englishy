@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { classes } from "./PageElements";
+import { classes } from "./ui";
 const colors = {
   primary: "bg-primary",
   success: "bg-success",

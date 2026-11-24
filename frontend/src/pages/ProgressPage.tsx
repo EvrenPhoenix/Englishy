@@ -4,9 +4,8 @@ import { useTranslate } from "../i18n/provider";
 import { LEVEL_LABELS } from "../../../shared/constants";
 import { Flame, Target } from "lucide-react";
 import { usePreferences } from "../components/PreferencesProvider";
-import { ActionLink } from "../components/ActionLink";
+import { ButtonLink, Badge, Card, PageHeader, classes } from "../components/ui";
 import { ActivityChart } from "../components/ActivityChart";
-import { Badge, Card, PageHeader, classes } from "../components/PageElements";
 import { ProgressBar } from "../components/ProgressIndicators";
 import { contentIcon } from "../components/content-icons";
 import { units } from "../data/units";
@@ -273,9 +272,9 @@ export function ProgressPage() {
           <div className="mt-4 border-t border-border pt-4">
             <p className="text-sm font-medium">Recommended next step</p>
             {next ? (
-              <ActionLink to={`/learn/${next.id}`} size="sm" className="mt-2">
+              <ButtonLink to={`/learn/${next.id}`} size="sm" className="mt-2">
                 {next.title}
-              </ActionLink>
+              </ButtonLink>
             ) : (
               <p className="mt-1 text-sm text-muted">
                 Try conversation practice or writing feedback.

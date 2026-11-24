@@ -5,9 +5,8 @@ import { useTranslate } from "../i18n/provider";
 import { Check, ChevronRight, Lock } from "lucide-react";
 import { LEVELS, LEVEL_LABELS, type Level } from "../../../shared/constants";
 import { usePreferences } from "../components/PreferencesProvider";
-import { classes, PageHeader, Card } from "../components/PageElements";
+import { classes, PageHeader, Card, ButtonLink } from "../components/ui";
 import { ProgressBar, ProgressRing } from "../components/ProgressIndicators";
-import { ActionLink } from "../components/ActionLink";
 import { contentIcon } from "../components/content-icons";
 import { useStoredValue } from "../lib/use-stored-value";
 import { learnerDatabase } from "../lib/storage-keys";
@@ -275,12 +274,12 @@ export function LearnPage() {
                 for A2 and B1), the writing assistant and the grammar library.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
-                <ActionLink to="/conversation">
+                <ButtonLink to="/conversation">
                   Conversation practice
-                </ActionLink>
-                <ActionLink to="/grammar" variant="secondary">
+                </ButtonLink>
+                <ButtonLink to="/grammar" variant="secondary">
                   Grammar library
-                </ActionLink>
+                </ButtonLink>
               </div>
             </div>
           </div>

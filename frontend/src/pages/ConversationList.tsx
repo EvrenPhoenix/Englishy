@@ -4,11 +4,11 @@ import { usePageMeta } from "../lib/use-page-meta";
 import { useTranslate } from "../i18n/provider";
 import { LEVELS, LEVEL_LABELS } from "../../../shared/constants";
 import { usePreferences } from "../components/PreferencesProvider";
-import { Badge, PageHeader, classes } from "../components/PageElements";
+import { Badge, PageHeader, classes } from "../components/ui";
 import { contentIcon } from "../components/content-icons";
 import { scenarioCategories } from "../data/catalogues";
 import { scenarios } from "../data/scenarios";
-import { scenarioChats } from "../lib/database";
+import { scenarioChats } from "../lib/conversations";
 import { learnerDatabase } from "../lib/storage-keys";
 import { useStoredValue } from "../lib/use-stored-value";
 export function ConversationList() {

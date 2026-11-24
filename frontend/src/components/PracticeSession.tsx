@@ -5,7 +5,7 @@ import { useTranslate } from "../i18n/provider";
 import { logActivity, recordResults, type ActivityType } from "../lib/activity";
 import { useActiveTime } from "../lib/use-active-time";
 import type { LessonOutcome } from "../lib/storage-keys";
-import { Button } from "./FormControls";
+import { Button } from "./ui";
 import { ProgressBar } from "./ProgressIndicators";
 import { ExerciseView } from "./ExerciseView";
 

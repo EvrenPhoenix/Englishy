@@ -1,117 +1,82 @@
-import { useEffect, useId, useRef, type ReactNode } from "react";
-import {
-  CircleCheck,
-  Info,
-  TriangleAlert,
-  X,
-  type LucideIcon,
-} from "lucide-react";
-import { classes } from "./PageElements";
+import { useId, type ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
+import { classes } from "./classes";
 
-const noticeTones = {
-  info: { box: "bg-indigo-soft", icon: Info, text: "text-indigo" },
-  warning: {
-    box: "bg-warning-soft",
-    icon: TriangleAlert,
-    text: "text-warning",
-  },
-  danger: { box: "bg-danger-soft", icon: TriangleAlert, text: "text-danger" },
-  success: { box: "bg-success-soft", icon: CircleCheck, text: "text-success" },
-};
-
-/** Tinted message box used for statuses, errors and confirmations. */
-export function Notice({
-  tone = "info",
+export function ChoiceCard({
+  selected,
+  onClick,
   title,
-  children,
-  action,
-  icon,
+  description,
+  icon: Icon,
+  multi,
+  lang,
 }: {
-  tone?: keyof typeof noticeTones;
-  title?: ReactNode;
-  children: ReactNode;
-  action?: ReactNode;
+  selected: boolean;
+  onClick: () => void;
+  title: string;
+  description?: string;
   icon?: LucideIcon;
+  multi?: boolean;
+  lang?: string;
 }) {
-  const style = noticeTones[tone];
-  const Icon = icon ?? style.icon;
   return (
-    <div
-      className={classes("flex gap-3 rounded-2xl p-4 text-sm", style.box)}
-      role={tone === "danger" ? "alert" : "status"}
-    >
-      <Icon
-        aria-hidden
-        className={classes("mt-0.5 size-5 shrink-0", style.text)}
-      />
-      <div className="min-w-0 flex-1">
-        {title && <p className="font-semibold">{title}</p>}
-        <div className={classes(Boolean(title) && "mt-0.5", "text-text/90")}>
-          {children}
-        </div>
-        {action && <div className="mt-3">{action}</div>}
-      </div>
-    </div>
-  );
-}
-
-/** Native modal dialog. Content only mounts while open. */
-export function Dialog({
-  open,
-  onClose,
-  title,
-  children,
-  footer,
-}: {
-  open: boolean;
-  onClose: () => void;
-  title: ReactNode;
-  children: ReactNode;
-  footer?: ReactNode;
-}) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const titleId = useId();
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
-  }, [open]);
-  return (
-    <dialog
-      ref={ref}
-      aria-labelledby={titleId}
-      onClose={onClose}
-      onCancel={(event) => {
-        event.preventDefault();
-        onClose();
-      }}
-      className="m-auto w-[min(92vw,30rem)] rounded-3xl border border-border bg-raised p-0 text-text shadow-raised backdrop:bg-black/45 backdrop:backdrop-blur-[2px]"
-    >
-      {open && (
-        <div className="p-6">
-          <div className="mb-3 flex items-start justify-between gap-4">
-            <h2 id={titleId} className="text-lg font-semibold">
-              {title}
-            </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="-m-1.5 grid size-9 place-items-center rounded-full text-muted hover:bg-surface-2"
-              aria-label="Close"
-            >
-              <X className="size-5" aria-hidden />
-            </button>
-          </div>
-          <div className="text-[0.95rem] text-text/90">{children}</div>
-          {footer && (
-            <div className="mt-6 flex flex-wrap justify-end gap-2">
-              {footer}
-            </div>
-          )}
-        </div>
+    <button
+      type="button"
+      role={multi ? "checkbox" : "radio"}
+      aria-checked={selected}
+      onClick={onClick}
+      className={classes(
+        "flex w-full items-start gap-3 rounded-2xl border p-4 text-start transition-colors",
+        selected
+          ? "border-primary bg-primary-soft"
+          : "border-border bg-surface hover:border-border-strong hover:bg-surface-2",
       )}
-    </dialog>
+    >
+      {Icon && (
+        <span
+          aria-hidden
+          className={classes(
+            "grid size-9 shrink-0 place-items-center rounded-xl",
+            selected ? "bg-primary text-on-primary" : "bg-surface-2 text-muted",
+          )}
+        >
+          <Icon className="size-4.5" />
+        </span>
+      )}
+      <span className="min-w-0 flex-1">
+        <span lang={lang} className="block font-medium">
+          {title}
+        </span>
+        {description && (
+          <span className="mt-0.5 block text-sm text-muted">{description}</span>
+        )}
+      </span>
+      <span
+        aria-hidden
+        className={classes(
+          "mt-0.5 grid size-5 shrink-0 place-items-center border-2",
+          multi ? "rounded-md" : "rounded-full",
+          selected
+            ? "border-primary bg-primary text-on-primary"
+            : "border-border-strong",
+        )}
+      >
+        {selected &&
+          (multi ? (
+            <svg viewBox="0 0 12 12" className="size-3">
+              <path
+                d="M2 6.5 5 9l5-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          ) : (
+            <span className="size-2 rounded-full bg-current" />
+          ))}
+      </span>
+    </button>
   );
 }
 

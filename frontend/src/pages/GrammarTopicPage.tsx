@@ -11,8 +11,7 @@ import {
 } from "lucide-react";
 import { LEVEL_LABELS } from "../../../shared/constants";
 import { grammar } from "../data/grammar";
-import { Badge } from "../components/PageElements";
-import { Button, ButtonLink } from "../components/FormControls";
+import { Badge, Button, ButtonLink } from "../components/ui";
 import { RichText } from "../components/RichText";
 import { PracticeSession } from "../components/PracticeSession";
 import { ListenButton } from "../components/SpeechControls";

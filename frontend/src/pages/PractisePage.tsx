@@ -15,9 +15,13 @@ import { lessons } from "../data/lessons";
 import { grammar } from "../data/grammar";
 import type { Exercise } from "../data/types";
 import { useTranslate } from "../i18n/provider";
-import { Badge, PageHeader } from "../components/PageElements";
-import { Button, ButtonLink } from "../components/FormControls";
-import { Notice } from "../components/Controls";
+import {
+  Badge,
+  PageHeader,
+  Button,
+  ButtonLink,
+  Notice,
+} from "../components/ui";
 import { PracticeSession } from "../components/PracticeSession";
 import { usePageMeta } from "../lib/use-page-meta";
 import { useAiProfile } from "../lib/use-ai-profile";

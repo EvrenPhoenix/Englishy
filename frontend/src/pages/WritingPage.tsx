@@ -12,9 +12,14 @@ import {
 } from "../../../shared/schemas";
 import { writingModes } from "../data/catalogues";
 import { useTranslate } from "../i18n/provider";
-import { Badge, PageHeader, classes } from "../components/PageElements";
-import { Button } from "../components/FormControls";
-import { Notice, SwitchRow } from "../components/Controls";
+import {
+  Badge,
+  PageHeader,
+  classes,
+  Button,
+  Notice,
+  SwitchRow,
+} from "../components/ui";
 import { usePageMeta } from "../lib/use-page-meta";
 import { useAiProfile } from "../lib/use-ai-profile";
 import { useAiStatus } from "../lib/use-ai-status";

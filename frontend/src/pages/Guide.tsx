@@ -1,7 +1,7 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Link, useParams } from "react-router";
 import { BRAND } from "../../../shared/brand";
-import { ActionLink } from "../components/ActionLink";
+import { ButtonLink } from "../components/ui";
 import { Brand } from "../components/Brand";
 import { guides } from "../data/guides";
 import type { Guide as GuideArticle } from "../data/types";
@@ -32,9 +32,9 @@ function Article({ guide }: { guide: GuideArticle }) {
         </section>
       ))}
       <div className="mt-10 rounded-2xl bg-primary-soft p-6">
-        <ActionLink to={guide.cta.to} arrow>
+        <ButtonLink to={guide.cta.to} iconEnd={ArrowRight}>
           {guide.cta.label}
-        </ActionLink>
+        </ButtonLink>
       </div>
       <nav
         aria-label="More guides"
@@ -76,9 +76,9 @@ export function Guide() {
           <Link to="/" aria-label={`${BRAND.name} home`}>
             <Brand />
           </Link>
-          <ActionLink size="sm" to="/start">
+          <ButtonLink size="sm" to="/start">
             Start learning
-          </ActionLink>
+          </ButtonLink>
         </div>
       </header>
       <main id="main" className="mx-auto max-w-3xl px-4 py-10">
