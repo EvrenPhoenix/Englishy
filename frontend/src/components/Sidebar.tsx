@@ -260,27 +260,39 @@ function ProfileMenu({
         onClick={() => setOpen(!open)}
         className={`flex w-full items-center gap-3 rounded-2xl text-start hover:bg-surface-3/70 ${compact ? "justify-center p-1" : "p-2"}`}
       >
-        <span
-          aria-hidden="true"
-          className="relative grid size-[38px] shrink-0 place-items-center text-[0.68rem] font-semibold"
-        >
-          <svg
-            viewBox="0 0 38 38"
-            className="absolute inset-0 -rotate-90 fill-none"
-            strokeWidth="3.5"
-          >
-            <circle cx="19" cy="19" r="17" stroke="var(--surface-3)" />
-            <circle
-              cx="19"
-              cy="19"
-              r="17"
-              stroke="var(--primary)"
-              pathLength="1"
-              strokeDasharray={`${Math.min(1, minutes / prefs.dailyGoalMinutes)} 1`}
-              strokeLinecap="round"
-            />
-          </svg>
-          {LEVEL_LABELS[prefs.level].code}
+        <span aria-hidden="true">
+          <span className="relative inline-grid size-[38px] shrink-0 place-items-center">
+            <svg
+              width="38"
+              height="38"
+              className="-rotate-90"
+              fill="none"
+              strokeWidth="3.5"
+            >
+              <circle cx="19" cy="19" r="17.25" stroke="var(--surface-3)" />
+              <circle
+                cx="19"
+                cy="19"
+                r="17.25"
+                stroke="var(--primary)"
+                strokeLinecap="round"
+                strokeDasharray={2 * Math.PI * 17.25}
+                strokeDashoffset={
+                  2 *
+                  Math.PI *
+                  17.25 *
+                  (1 -
+                    Math.max(0, Math.min(1, minutes / prefs.dailyGoalMinutes)))
+                }
+                className="transition-[stroke-dashoffset] duration-700"
+              />
+            </svg>
+            <span className="absolute inset-0 grid place-items-center text-sm font-semibold">
+              <span className="text-[0.68rem] font-semibold">
+                {LEVEL_LABELS[prefs.level].code}
+              </span>
+            </span>
+          </span>
         </span>
         <span className={compact ? "sr-only" : "min-w-0 flex-1"}>
           <span className="block truncate text-sm font-medium">
