@@ -29,6 +29,9 @@ const GrammarTopicPage = lazy(async () => ({
 const VocabularyPage = lazy(async () => ({
   default: (await import("./pages/VocabularyPage")).VocabularyPage,
 }));
+const WritingPage = lazy(async () => ({
+  default: (await import("./pages/WritingPage")).WritingPage,
+}));
 const Settings = lazy(async () => ({
   default: (await import("./pages/Settings")).Settings,
 }));
@@ -45,6 +48,7 @@ const pages: Partial<Record<Destination, React.ReactElement>> = {
   help: <Help />,
   settings: <Settings />,
   vocabulary: <VocabularyPage />,
+  writing: <WritingPage />,
 };
 
 /** Public pages get the same error boundary and loading state as the app shell. */

@@ -146,8 +146,9 @@ for (const name of names) {
       ref.title === neu.title &&
       ref.dir === neu.dir &&
       sameApi &&
-      !ref.errors.length &&
-      !neu.errors.length;
+      // Errors are fine only when both builds report exactly the same ones
+      // (for example a mocked 429 response logged by the browser).
+      JSON.stringify(ref.errors) === JSON.stringify(neu.errors);
     if (!ok) {
       failed++;
       writeFileSync(`${out}/${tag}-ref.png`, ref.png);

@@ -508,6 +508,184 @@ Object.assign(pages, {
   },
 });
 
+const writingReply = {
+  json: {
+    summary: "A friendly message with a few small mistakes.",
+    corrected:
+      "Hi Sam, I am going to the market tomorrow. Do you want to come with me? We can buy some fruit.",
+    improved:
+      "Hi Sam! I'm heading to the market tomorrow. Would you like to join me? We could pick up some fruit.",
+    strengths: ["Clear purpose", "Friendly tone"],
+    issues: [
+      {
+        original: "I going",
+        suggestion: "I am going",
+        category: "grammar",
+        explanation: "Use am + -ing for plans.",
+        optional: false,
+      },
+      {
+        original: "Do you wants",
+        suggestion: "Do you want",
+        category: "grammar",
+        explanation: "After do, use the base verb.",
+        optional: false,
+      },
+      {
+        original: "fruits",
+        suggestion: "fruit",
+        category: "vocabulary",
+        explanation: "Fruit is usually uncountable.",
+        optional: true,
+      },
+      {
+        original: "can buy",
+        suggestion: "could pick up",
+        category: "style",
+        explanation: "Sounds more natural.",
+        optional: true,
+      },
+      {
+        original: "not in the text",
+        suggestion: "x",
+        category: "spelling",
+        explanation: "Cannot be placed.",
+        optional: false,
+      },
+    ],
+  },
+};
+const writingText =
+  "Hi Sam, I going to the market tomorrow. Do you wants to come with me? We can buy some fruits.";
+const writingFeedbackFlow = async (p) => {
+  await p.locator("main textarea").fill(writingText);
+  await p.locator("main fieldset button").nth(1).click();
+  await p.locator("main input:not([type])").first().fill("Invite a friend");
+  await p.locator("main [role=switch]").click();
+  await p.locator("main .card > .flex-wrap.gap-2 > button").first().click();
+  await p.locator("main h2").first().waitFor();
+};
+Object.assign(pages, {
+  Writing: { path: "/writing", ready: h1 },
+  "Writing-draft": {
+    path: "/writing",
+    ready: h1,
+    act: async (p) => {
+      await p.locator("main textarea").fill(writingText);
+      await p.locator("main fieldset button").nth(5).click();
+    },
+  },
+  "Writing-too-long": {
+    path: "/writing",
+    ready: h1,
+    act: (p) => p.locator("main textarea").fill("word ".repeat(820)),
+  },
+  "Writing-ai-off": {
+    path: "/writing",
+    ready: h1,
+    api: {
+      status: { json: { enabled: false, configured: false, available: false } },
+    },
+  },
+  "Writing-error": {
+    path: "/writing",
+    ready: h1,
+    api: {
+      writing: {
+        status: 429,
+        json: {
+          error: {
+            code: "rate_limited",
+            message: "Too many requests.",
+            retryAfter: 12.2,
+          },
+        },
+      },
+    },
+    act: async (p) => {
+      await p.locator("main textarea").fill(writingText);
+      await p.locator("main .card > .flex-wrap.gap-2 > button").first().click();
+      await p.locator("main [role=alert]").waitFor();
+    },
+  },
+  "Writing-invalid": {
+    path: "/writing",
+    ready: h1,
+    api: { writing: { json: { summary: 1 } } },
+    act: async (p) => {
+      await p.locator("main textarea").fill(writingText);
+      await p.locator("main .card > .flex-wrap.gap-2 > button").first().click();
+      await p.locator("main [role=alert]").waitFor();
+    },
+  },
+  "Writing-feedback": {
+    path: "/writing",
+    ready: h1,
+    api: { writing: writingReply },
+    act: writingFeedbackFlow,
+  },
+  "Writing-feedback-interact": {
+    path: "/writing",
+    ready: h1,
+    api: { writing: writingReply },
+    act: async (p) => {
+      await writingFeedbackFlow(p);
+      await p.locator("main p.leading-loose button").nth(2).click();
+      await p.locator("main li .mt-2.flex button").nth(2).click();
+      await p.locator("main li .mt-2.flex button").first().click();
+      await p.locator("main label input[type=checkbox]").uncheck();
+    },
+  },
+  "Writing-no-issues": {
+    path: "/writing",
+    ready: h1,
+    api: {
+      writing: {
+        json: {
+          summary: "Perfect.",
+          corrected: writingText,
+          issues: [],
+          strengths: [],
+        },
+      },
+    },
+    act: writingFeedbackFlow,
+  },
+  "Writing-edit-again": {
+    path: "/writing",
+    ready: h1,
+    api: { writing: writingReply },
+    act: async (p) => {
+      await writingFeedbackFlow(p);
+      await p
+        .locator(
+          "main > div > .flex-wrap.gap-2 > button, main .space-y-5 > .flex.flex-wrap.gap-2 > button",
+        )
+        .first()
+        .click();
+      await p.locator("main textarea").waitFor();
+    },
+  },
+});
+
+Object.assign(pages, {
+  // Data: feedback logs a writing activity and the draft persists in localStorage.
+  "Writing-save-data": {
+    path: "/writing",
+    ready: h1,
+    api: { writing: writingReply },
+    act: async (p) => {
+      await writingFeedbackFlow(p);
+      await p.locator("main li .mt-2.flex button").nth(2).click();
+      await p
+        .locator(".space-y-5 > .flex.flex-wrap.gap-2 > button")
+        .first()
+        .click();
+      await p.locator("main textarea").waitFor();
+    },
+  },
+});
+
 const grammarIds = [
   "parts-of-speech",
   "nouns",
