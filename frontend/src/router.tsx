@@ -1,3 +1,4 @@
+import { Guide } from "./pages/Guide";
 import { Help } from "./pages/Help";
 import { NotFound } from "./pages/NotFound";
 import { createBrowserRouter, Navigate, Outlet } from "react-router";
@@ -6,6 +7,7 @@ import { navItems, type Destination } from "./components/navigation";
 import { Placeholder } from "./pages/Placeholder";
 
 export const router = createBrowserRouter([
+  { path: "/guides/:slug", element: <Guide /> },
   {
     element: (
       <main id="main">
@@ -14,7 +16,6 @@ export const router = createBrowserRouter([
     ),
     children: [
       { path: "/", element: <Placeholder title="Englishy" /> },
-      { path: "/guides/:slug", element: <Placeholder title="Guide" /> },
       { path: "/start", element: <Placeholder title="Onboarding" /> },
       { path: "/placement", element: <Placeholder title="Placement" /> },
     ],
