@@ -33,3 +33,11 @@ The dry run bundles the Worker and frontend locally. For an authorised Cloudflar
 ## Known limitation
 
 The original frontend source was lost. `frontend-compiled/` is the compiled build recovered from the live site. The editable React, Vite and Tailwind source will be rebuilt later. The Worker source was recovered from its source map, and Zod is pinned to the recovered version, 4.6.7.
+
+## Fixes vs original app
+
+The rebuilt frontend matches the compiled release except for these intentional fixes. Each one lands in its own commit after a faithful rebuild of the page.
+
+| Area | Original behaviour | Rebuilt behaviour | Test |
+| --- | --- | --- | --- |
+| Settings → **Add to my progress (safe)** | When a backup lesson had a higher best score, its latest attempt score and date replaced a newer attempt already on the device. A newly completed backup row with a lower best score could also lower the stored best. | Keeps the higher best score, the larger attempt count and the earlier start date, and takes the latest attempt's score and date together from whichever record was updated more recently. Storage format is unchanged. | `frontend: npm run test:merge`, `scripts/check-settings-data.mjs --expect-merge-fix` |
