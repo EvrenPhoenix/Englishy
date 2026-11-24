@@ -73,6 +73,17 @@ async function openLearnerDatabase() {
   }
 }
 const database = openLearnerDatabase();
+/** The opened learner database, or null when IndexedDB is unavailable. */
+export const learnerDb = () => database;
+/** Tell this tab and other tabs that a store changed. */
+export function notifyStore(store: string) {
+  events.dispatchEvent(new Event(store));
+  try {
+    storeChanges?.postMessage(store);
+  } catch {
+    // Channel closed during unload.
+  }
+}
 let memoryPrefs = defaultPreferences();
 
 function mergeDefaults(saved?: Partial<Preferences>): Preferences {
