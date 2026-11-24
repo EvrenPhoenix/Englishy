@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ArrowUp, Square, type LucideIcon } from "lucide-react";
-import { classes } from "./PageElements";
+import { classes } from "./ui";
 import { useTranslate } from "../i18n/provider";
 interface Props {
   value: string;

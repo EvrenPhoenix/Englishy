@@ -125,25 +125,6 @@ export async function updatePreferences(
   storeChanges?.postMessage(stores.kv);
 }
 
-interface ChatSummary {
-  id: string;
-  title: string;
-  updatedAt: string;
-  kind: string;
-  scenarioId?: string;
-  report?: unknown;
-}
-async function chatsOfKind(kind: string): Promise<ChatSummary[]> {
-  const rows: ChatSummary[] =
-    (await (await database)?.getAll(stores.conversations)) ?? [];
-  return rows
-    .filter((row) => row.kind === kind)
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-}
-export const scenarioChats = () => chatsOfKind("scenario");
-export async function recentTutorChats() {
-  return (await chatsOfKind("tutor")).slice(0, 30);
-}
 export async function minutesToday() {
   const date = new Date();
   const today = [

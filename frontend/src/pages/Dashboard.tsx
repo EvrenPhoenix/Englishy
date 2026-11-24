@@ -34,8 +34,7 @@ import {
 import { progressStores, readProgressRecords } from "../lib/database";
 import { useStoredValue } from "../lib/use-stored-value";
 import { usePreferences } from "../components/PreferencesProvider";
-import { classes, Badge } from "../components/PageElements";
-import { ActionLink } from "../components/ActionLink";
+import { classes, Badge, ButtonLink } from "../components/ui";
 import { Composer, Suggestion } from "../components/Composer";
 import { contentIcon } from "../components/content-icons";
 import { ProgressRing, ProgressBar } from "../components/ProgressIndicators";
@@ -198,9 +197,14 @@ function DashboardOverview({
             <p className="font-semibold">{t("home.setupTitle")}</p>
             <p className="text-sm text-text/80">{t("home.setupBody")}</p>
           </div>
-          <ActionLink to="/start" size="sm" variant="secondary" arrow>
+          <ButtonLink
+            to="/start"
+            size="sm"
+            variant="secondary"
+            iconEnd={ArrowRight}
+          >
             {t("home.setupCta")}
-          </ActionLink>
+          </ButtonLink>
         </div>
       )}
       <div className="grid gap-4 lg:grid-cols-3">
@@ -237,9 +241,13 @@ function DashboardOverview({
                     <Badge tone="accent">{t("lesson.inProgress")}</Badge>
                   )}
                 </div>
-                <ActionLink to={`/learn/${next.id}`} className="mt-4" arrow>
+                <ButtonLink
+                  to={`/learn/${next.id}`}
+                  className="mt-4"
+                  iconEnd={ArrowRight}
+                >
                   {t(saved ? "dashboard.continue" : "common.start")}
-                </ActionLink>
+                </ButtonLink>
               </div>
             </div>
           ) : (

@@ -19,7 +19,8 @@ import {
 import { BRAND } from "../../../shared/brand";
 import { LEVEL_LABELS } from "../../../shared/constants";
 import { useTranslate } from "../i18n/provider";
-import { minutesToday, recentTutorChats } from "../lib/database";
+import { minutesToday } from "../lib/database";
+import { recentTutorChats } from "../lib/conversations";
 import { Brand } from "./Brand";
 import { usePreferences } from "./PreferencesProvider";
 import {

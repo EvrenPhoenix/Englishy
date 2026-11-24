@@ -21,8 +21,7 @@ import {
   seededShuffle,
   type CheckResult,
 } from "../lib/validate";
-import { Button } from "./FormControls";
-import { classes } from "./PageElements";
+import { Button, classes } from "./ui";
 import { usePreferences } from "./PreferencesProvider";
 import { ListenButton, RecorderControls, useRecorder } from "./SpeechControls";
 

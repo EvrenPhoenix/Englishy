@@ -26,7 +26,7 @@ const GrammarTopicPage = lazy(async () => ({
   default: (await import("./pages/GrammarTopicPage")).GrammarTopicPage,
 }));
 const VocabularyPage = lazy(async () => ({
-  default: (await import("./pages/VocabularyPage")).VocabularyPage,
+  default: (await import("./pages/vocabulary/VocabularyPage")).VocabularyPage,
 }));
 const WritingPage = lazy(async () => ({
   default: (await import("./pages/WritingPage")).WritingPage,
@@ -41,10 +41,11 @@ const TutorPage = lazy(async () => ({
   default: (await import("./pages/TutorPage")).TutorPage,
 }));
 const ConversationPage = lazy(async () => ({
-  default: (await import("./pages/ConversationPage")).ConversationPage,
+  default: (await import("./pages/conversation/ConversationPage"))
+    .ConversationPage,
 }));
 const LessonPage = lazy(async () => ({
-  default: (await import("./pages/LessonPage")).LessonPage,
+  default: (await import("./pages/lesson/LessonPage")).LessonPage,
 }));
 const Settings = lazy(async () => ({
   default: (await import("./pages/Settings")).Settings,

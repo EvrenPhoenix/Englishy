@@ -5,9 +5,7 @@ import { LIMITS } from "../../../shared/constants";
 import { tutorPrompts } from "../data/catalogues";
 import { useTranslate } from "../i18n/provider";
 import { usePreferences } from "../components/PreferencesProvider";
-import { Badge } from "../components/PageElements";
-import { Button } from "../components/FormControls";
-import { Dialog, Notice } from "../components/Controls";
+import { Badge, Button, Dialog, Notice } from "../components/ui";
 import {
   ChatAction,
   LearnerBubble,

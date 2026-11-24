@@ -1,5 +1,5 @@
 import { Compass } from "lucide-react";
-import { ActionLink } from "../components/ActionLink";
+import { ButtonLink } from "../components/ui";
 import { useTranslate } from "../i18n/provider";
 import { usePageMeta } from "../lib/use-page-meta";
 
@@ -20,7 +20,7 @@ export function NotFound() {
           {t("notFound.body")}
         </div>
         <div className="mt-5">
-          <ActionLink to="/home">{t("nav.home")}</ActionLink>
+          <ButtonLink to="/home">{t("nav.home")}</ButtonLink>
         </div>
       </div>
     </div>

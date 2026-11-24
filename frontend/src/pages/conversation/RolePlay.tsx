@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Link, useParams } from "react-router";
 import {
   ArrowLeft,
   BookOpen,
-  CircleCheck,
   ClipboardList,
   Languages,
   Lightbulb,
@@ -15,239 +13,36 @@ import {
   Volume2,
   type LucideIcon,
 } from "lucide-react";
-import {
-  LEVEL_LABELS,
-  LIMITS,
-  type CorrectionMode,
-} from "../../../shared/constants";
-import { getScenario, type Scenario } from "../../../shared/scenarios";
+import { LIMITS, type CorrectionMode } from "../../../../shared/constants";
+import { type Scenario } from "../../../../shared/scenarios";
 import {
   conversationReportSchema,
   type ConversationReport,
-} from "../../../shared/schemas";
-import { useTranslate } from "../i18n/provider";
-import { usePreferences } from "../components/PreferencesProvider";
-import { Badge, classes } from "../components/PageElements";
-import { Button, ButtonLink, ChoiceCard } from "../components/FormControls";
-import { Notice, Segmented } from "../components/Controls";
+} from "../../../../shared/schemas";
+import { useTranslate } from "../../i18n/provider";
+import { usePreferences } from "../../components/PreferencesProvider";
+import { classes, Button, Notice } from "../../components/ui";
 import {
   ChatAction,
   LearnerBubble,
-  TutorMark,
   TutorMessage,
   TypingIndicator,
-} from "../components/ChatMessages";
-import { Composer } from "../components/Composer";
-import { Markdown } from "../components/Markdown";
-import { useRecorder } from "../components/SpeechControls";
-import { contentIcon } from "../components/content-icons";
-import { usePageMeta } from "../lib/use-page-meta";
-import { useAiStatus } from "../lib/use-ai-status";
-import { useAiProfile } from "../lib/use-ai-profile";
-import { useOnline } from "../lib/use-online";
-import { useActiveTime } from "../lib/use-active-time";
-import { useChat, type ChatMessage } from "../lib/use-chat";
-import { logActivity, newId } from "../lib/activity";
-import { saveConversation } from "../lib/conversations";
-import { aiErrorMessage, postJson } from "../lib/ai";
-import { speak, speechSupported, stopSpeaking } from "../lib/speech";
-import { NotFound } from "./NotFound";
-
-type Difficulty = "easy" | "standard" | "challenging";
-
-/** The partner's first name when the role starts with one ("Maria, a waiter…"). */
-function partnerName(scenario: Scenario) {
-  const first = scenario.aiRole.split(",")[0].trim();
-  return /^[A-Z]/.test(first) && first.length <= 20 ? first : undefined;
-}
-/** Reply text for speech: no tips line and no Markdown symbols. */
-function speakableReply(text: string) {
-  return text
-    .replace(/💡.*$/s, "")
-    .replace(/[*_#`>]/g, "")
-    .trim();
-}
-
-function ScrollPage({ children }: { children: ReactNode }) {
-  return (
-    <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-2xl px-4 pt-6 pb-16 sm:px-6 lg:pt-10">
-        {children}
-      </div>
-    </div>
-  );
-}
-
-export function ConversationPage() {
-  const t = useTranslate();
-  const { scenarioId = "" } = useParams();
-  const scenario = getScenario(scenarioId);
-  usePageMeta({
-    title: scenario
-      ? `${scenario.title} · Conversation practice`
-      : "Conversation",
-    description: scenario?.setting,
-    path: `/conversation/${scenarioId}`,
-    noindex: !scenario,
-  });
-  const { prefs } = usePreferences();
-  const [started, setStarted] = useState<{
-    difficulty: Difficulty;
-    correction: CorrectionMode;
-  } | null>(null);
-  const [difficulty, setDifficulty] = useState<Difficulty>(
-    ["pre-a1", "a1"].includes(prefs.level) ? "easy" : "standard",
-  );
-  const [correction, setCorrection] = useState<CorrectionMode>(
-    prefs.correctionMode,
-  );
-  const status = useAiStatus();
-  if (!scenario)
-    return (
-      <ScrollPage>
-        <NotFound />
-      </ScrollPage>
-    );
-  const Icon = contentIcon(scenario.icon);
-  if (started)
-    return (
-      <RolePlay
-        key={`${started.difficulty}-${started.correction}`}
-        scenario={scenario}
-        {...started}
-        onRestart={() => setStarted(null)}
-      />
-    );
-  const name = partnerName(scenario);
-  return (
-    <ScrollPage>
-      <Link
-        to="/conversation"
-        className="inline-flex items-center gap-1.5 rounded-full py-1 pe-2 text-sm text-muted hover:text-text"
-      >
-        <ArrowLeft className="size-4 rtl:-scale-x-100" aria-hidden />
-        {" All scenarios"}
-      </Link>
-      <header className="mt-5 flex items-start gap-4">
-        <span
-          className="bg-brand-mark grid size-14 shrink-0 place-items-center rounded-2xl text-white"
-          aria-hidden
-        >
-          <Icon className="size-7" />
-        </span>
-        <div className="min-w-0">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            {scenario.title}
-          </h1>
-          <p className="mt-1 text-muted">{scenario.setting}</p>
-          <Badge tone="primary" className="mt-2">
-            {"From "}
-            {LEVEL_LABELS[scenario.minLevel].code}
-          </Badge>
-        </div>
-      </header>
-      <div className="card mt-6 p-5">
-        <div className="flex items-start gap-3">
-          <TutorMark className="size-9" />
-          <p className="min-w-0">
-            <strong>{name ?? "Your partner"}</strong>
-            <span className="text-muted">
-              {" · "}
-              {name
-                ? scenario.aiRole.slice(name.length + 1).trim()
-                : scenario.aiRole}
-            </span>
-            <br />
-            <span className="text-muted">You are </span>
-            {scenario.learnerRole}
-            {"."}
-          </p>
-        </div>
-        <h2 className="mt-5 text-sm font-semibold">Goals</h2>
-        <ul className="mt-2 space-y-1.5">
-          {scenario.objectives.map((goal) => (
-            <li key={goal} className="flex gap-2">
-              <CircleCheck
-                className="mt-1 size-4 shrink-0 text-primary"
-                aria-hidden
-              />
-              {goal}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="mt-6 space-y-6">
-        <div>
-          <p className="mb-2 font-semibold" id="difficulty">
-            Difficulty
-          </p>
-          <Segmented
-            label="Difficulty"
-            value={difficulty}
-            onChange={setDifficulty}
-            className="w-full"
-            options={[
-              { value: "easy", label: "Easy" },
-              { value: "standard", label: "Standard" },
-              { value: "challenging", label: "Challenging" },
-            ]}
-          />
-        </div>
-        <fieldset>
-          <legend className="mb-2 font-semibold">Corrections</legend>
-          <div
-            className="grid gap-2"
-            role="radiogroup"
-            aria-label="Corrections"
-          >
-            {(
-              [
-                [
-                  "major",
-                  t("settings.correctMajor"),
-                  t("settings.correctMajorHelp"),
-                ],
-                [
-                  "immediate",
-                  t("settings.correctAll"),
-                  t("settings.correctAllHelp"),
-                ],
-                [
-                  "end",
-                  t("settings.correctNone"),
-                  t("settings.correctNoneHelp"),
-                ],
-              ] as const
-            ).map(([mode, title, description]) => (
-              <ChoiceCard
-                key={mode}
-                selected={correction === mode}
-                onClick={() => setCorrection(mode)}
-                title={title}
-                description={description}
-              />
-            ))}
-          </div>
-        </fieldset>
-        {status && !status.available && (
-          <Notice tone="warning">
-            The AI partner is not available right now. Try a lesson in the
-            meantime.
-          </Notice>
-        )}
-        <Button
-          size="lg"
-          className="w-full"
-          icon={Sparkles}
-          disabled={status?.available === false}
-          onClick={() => setStarted({ difficulty, correction })}
-        >
-          Start conversation
-        </Button>
-      </div>
-    </ScrollPage>
-  );
-}
+} from "../../components/ChatMessages";
+import { Composer } from "../../components/Composer";
+import { Markdown } from "../../components/Markdown";
+import { useRecorder } from "../../components/SpeechControls";
+import { useAiProfile } from "../../lib/use-ai-profile";
+import { useOnline } from "../../lib/use-online";
+import { useActiveTime } from "../../lib/use-active-time";
+import { useChat, type ChatMessage } from "../../lib/use-chat";
+import { logActivity, newId } from "../../lib/activity";
+import { saveConversation } from "../../lib/conversations";
+import { aiErrorMessage, postJson } from "../../lib/ai";
+import { speak, speechSupported, stopSpeaking } from "../../lib/speech";
+import { Difficulty } from "./ConversationPage";
+import { partnerName } from "./helpers";
+import { speakableReply } from "./helpers";
+import { ReportView } from "./ReportView";
 
 type Assist =
   | { kind: "error"; text: string }
@@ -257,7 +52,7 @@ type Assist =
       text?: string;
     };
 
-function RolePlay({
+export function RolePlay({
   scenario,
   difficulty,
   correction,
@@ -733,121 +528,5 @@ function HelpChip({
       <Icon className="size-4" aria-hidden />
       {children}
     </button>
-  );
-}
-
-function ReportView({
-  scenario,
-  report,
-  onRestart,
-}: {
-  scenario: Scenario;
-  report: ConversationReport;
-  onRestart: () => void;
-}) {
-  return (
-    <ScrollPage>
-      <header className="flex items-start gap-4">
-        <TutorMark className="size-12" />
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-primary-text">
-            Conversation report
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight">
-            {scenario.title}
-          </h1>
-          <p className="mt-1 text-sm text-muted">
-            Written by AI from your messages. It may miss things or make
-            mistakes.
-          </p>
-        </div>
-      </header>
-      <div className="mt-6 space-y-4">
-        {report.successes.length > 0 && (
-          <div className="card p-5">
-            <h2 className="font-semibold text-success">What went well</h2>
-            <ul className="mt-2 list-disc space-y-1 ps-5">
-              {report.successes.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        <div className="card p-5">
-          <h2 className="font-semibold">Corrections</h2>
-          {report.corrections.length === 0 ? (
-            <p className="mt-2 text-muted">
-              No important mistakes found. Well done!
-            </p>
-          ) : (
-            <ul className="mt-3 space-y-3">
-              {report.corrections.map((item, i) => (
-                <li key={i} className="rounded-2xl bg-surface-2 p-4">
-                  <p
-                    className="text-muted line-through decoration-danger/60"
-                    lang="en"
-                  >
-                    {item.original}
-                  </p>
-                  <p className="font-medium" lang="en">
-                    {item.corrected}
-                  </p>
-                  <p className="mt-1 text-sm text-muted">{item.explanation}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        {report.alternatives.length > 0 && (
-          <div className="card p-5">
-            <h2 className="font-semibold">More natural ways to say it</h2>
-            <ul className="mt-3 space-y-2" lang="en">
-              {report.alternatives.map((item, i) => (
-                <li key={i}>
-                  <span className="text-muted">{item.original}</span>
-                  {" → "}
-                  <strong>{item.natural}</strong>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {report.vocabulary.length > 0 && (
-          <div className="card p-5">
-            <h2 className="font-semibold">Useful vocabulary</h2>
-            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-              {report.vocabulary.map((item) => (
-                <li
-                  key={item.word}
-                  className="rounded-2xl bg-surface-2 px-4 py-2.5"
-                >
-                  <strong lang="en">{item.word}</strong>
-                  {" — "}
-                  {item.meaning}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {report.nextSteps.length > 0 && (
-          <div className="card p-5">
-            <h2 className="font-semibold">Practise next</h2>
-            <ul className="mt-2 list-disc space-y-1 ps-5">
-              {report.nextSteps.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        <div className="flex flex-wrap gap-2 pt-2">
-          <Button onClick={onRestart} icon={RefreshCw}>
-            Practise again
-          </Button>
-          <ButtonLink to="/conversation" variant="secondary">
-            Other scenarios
-          </ButtonLink>
-        </div>
-      </div>
-    </ScrollPage>
   );
 }

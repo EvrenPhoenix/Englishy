@@ -19,7 +19,7 @@ import {
 import { BRAND } from "../../../shared/brand";
 import { LEVELS, LEVEL_LABELS } from "../../../shared/constants";
 import { Brand } from "../components/Brand";
-import { ActionLink } from "../components/ActionLink";
+import { ButtonLink } from "../components/ui";
 import { ThemeToggle } from "../components/ThemeToggle";
 import {
   TutorMark,
@@ -116,9 +116,9 @@ function SiteHeader() {
           <div className="hidden sm:block">
             <ThemeToggle />
           </div>
-          <ActionLink to="/home" variant="secondary" size="sm">
+          <ButtonLink to="/home" variant="secondary" size="sm">
             Open app
-          </ActionLink>
+          </ButtonLink>
         </div>
       </div>
     </header>
@@ -144,17 +144,22 @@ function Hero() {
           }
         </p>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
-          <ActionLink to="/start" size="lg" arrow className="px-7">
+          <ButtonLink
+            to="/start"
+            size="lg"
+            iconEnd={ArrowRight}
+            className="px-7"
+          >
             Start learning
-          </ActionLink>
-          <ActionLink
+          </ButtonLink>
+          <ButtonLink
             to="/tutor"
             size="lg"
             variant="secondary"
             icon={MessageCircle}
           >
             Try the AI tutor
-          </ActionLink>
+          </ButtonLink>
         </div>
         <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-muted">
           {badges.map((badge) => (

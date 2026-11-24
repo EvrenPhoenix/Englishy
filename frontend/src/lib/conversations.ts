@@ -34,3 +34,10 @@ export async function deleteConversation(id: string) {
   await (await learnerDb())?.delete(stores.conversations, id);
   notifyStore(stores.conversations);
 }
+
+/** Scenario chats, newest first. */
+export const scenarioChats = () => listConversations("scenario");
+/** The 30 most recent tutor chats, for the sidebar. */
+export async function recentTutorChats() {
+  return (await listConversations("tutor")).slice(0, 30);
+}
