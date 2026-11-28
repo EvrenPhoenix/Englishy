@@ -1,6 +1,7 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "englishy",
+  "account_id": "43f672781197cf875864f0ec7e414d98",
   "main": "deploy/embedded-worker.ts",
   "compatibility_date": "2026-11-19",
   // Live Domains & Routes settings: the workers.dev URL and preview URLs are both on. Stated here so a deploy
