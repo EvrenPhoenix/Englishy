@@ -3,6 +3,10 @@
   "name": "englishy",
   "main": "deploy/embedded-worker.ts",
   "compatibility_date": "2026-11-19",
+  // Live Domains & Routes settings: the workers.dev URL and preview URLs are both on. Stated here so a deploy
+  // from this file keeps them as they are.
+  "workers_dev": true,
+  "preview_urls": true,
   "build": {
     "command": "npm run build"
   },
@@ -11,8 +15,12 @@
     "head_sampling_rate": 1,
     "logs": {
       "enabled": true,
+      "head_sampling_rate": 1,
       "persist": true,
       "invocation_logs": true
+    },
+    "traces": {
+      "enabled": false
     }
   },
   // Set the production secret separately with `wrangler secret put NVIDIA_API_KEY`.
