@@ -70,7 +70,7 @@ The npm packages are not committed: `npm ci` installs them into `node_modules/` 
 
 ## React Router
 
-- Version: 8.5.2
+- Version: 8.5.3
 - Licence: MIT
 - In this repository: dependency of `frontend/` (bundled into the web app)
 - Upstream: https://github.com/remix-run/react-router

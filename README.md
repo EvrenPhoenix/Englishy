@@ -16,7 +16,7 @@ Englishy is an English-learning web app for absolute beginners through A1. It of
 - `scripts/build-embedded.mjs` packages `frontend/dist` into the ignored `dist/embedded/assets.js` module. `npm run build` at the root builds the frontend and then runs this script, and Wrangler runs `npm run build` for development and deployment.
 - `frontend-compiled/` is the compiled release recovered from the live site before the rebuild. It is no longer deployed. It is kept as the reference for parity checks and course-content checks: `FRONTEND_DIR=frontend-compiled node scripts/build-embedded.mjs` embeds it instead. The `archive/original-release` branch keeps the repository as it was before the rebuild.
 
-Inside `frontend/src`: `pages/` holds one file (or folder, for larger pages) per route, `components/ui/` the shared buttons, fields, notices, dialogs and badges, `components/` the app shell, chat, exercise and speech components, `lib/` storage, AI, speech and progress logic, `data/` the course content, and `i18n/` the translations.
+Inside `frontend/src`: `pages/` holds one file (or folder, for larger pages) per route, `components/ui/` the shared buttons, fields, notices, dialogs and badges, `components/` the app shell, chat, exercise and speech components, `lib/` storage, AI, speech and progress logic, `data/` the course content, `i18n/` the translations, and `styles/` the global CSS and the Lexend fonts with their licence. `main.tsx` starts the app and `router.tsx` defines the routes.
 
 ## Local development
 
