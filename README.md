@@ -9,7 +9,7 @@ Englishy is an English-learning web app for absolute beginners through A1. It of
 - `frontend/` is the editable React, Vite and Tailwind CSS source for the browser app. `npm run build` there outputs `frontend/dist`, including a generated `sw.js` and `theme-init.js`.
   - `frontend/sw-template.js` is the service worker source. `frontend/vite.config.ts` fills in its cache version and precache list and writes the result to `dist/sw.js`.
   - `frontend/public/` (icons, the social preview image `og/og-image.png`, web app manifest, offline page, `robots.txt`, `sitemap.xml`) is copied into the build unchanged.
-  - `frontend/scripts/` holds the course-content check, the backup merge tests and the parity tools described below. `frontend/scripts/check-worker.mjs` checks a running `npx wrangler dev`: deep links, static files and headers, the API, and offline use through the service worker.
+  - `frontend/scripts/` holds the course-content check (`check:data`), the backup merge tests (`test:merge`), the saved-profile check (`check:profile`) and the parity tools, all described below. `frontend/scripts/check-worker.mjs` checks a running `npx wrangler dev`: deep links, static files and headers, the API, and offline use through the service worker.
 - `worker/` contains the recovered Cloudflare Worker API, NVIDIA client, usage safeguards and tutor prompts.
 - `shared/` contains the brand, constants, scenarios and validation schemas used by both the Worker and the frontend.
 - `deploy/embedded-worker.ts` is the Worker entry point. It passes `/api/*` requests to `worker/index.ts`. It also serves the embedded browser files with their content types and caching headers, and uses the app shell for routes such as `/learn`.
