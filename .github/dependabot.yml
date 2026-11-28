@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directories: ["/", "/frontend"]
+    schedule: { interval: weekly }
+    ignore:
+      - dependency-name: zod   # pinned to the recovered release (README, Rebuild notes)
+    groups:
+      cloudflare: { patterns: ["wrangler", "@cloudflare/*"] }
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule: { interval: weekly }
