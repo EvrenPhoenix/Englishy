@@ -1,5 +1,7 @@
 # Englishy
 
+**Live site:** https://englishy.assistant-service.workers.dev (Cloudflare Worker `englishy`)
+
 Englishy is an English-learning web app for absolute beginners through A1. It offers structured lessons, grammar, vocabulary review, speaking and listening exercises, writing feedback, conversation practice and an NVIDIA-powered AI tutor. Learners can use the core lessons as guests and keep their progress in their browser.
 
 ## Project layout
