@@ -1,12 +1,14 @@
 {
   "name": "englishy",
   "version": "0.0.0",
+  "description": "Englishy: free English lessons for absolute beginners up to A1, with an AI tutor. Source of the live Cloudflare Worker englishy.",
   "private": true,
   "type": "module",
   "scripts": {
     "postinstall": "npm --prefix frontend ci",
     "build": "npm --prefix frontend run build && node scripts/build-embedded.mjs",
     "typecheck": "wrangler types dist/worker-configuration.d.ts --include-runtime=false && tsc --noEmit",
+    "test": "npm --prefix frontend run check:data && npm --prefix frontend run test:merge",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy"
   },
@@ -19,6 +21,6 @@
     "wrangler": "4.167.0"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.22.0"
   }
 }
