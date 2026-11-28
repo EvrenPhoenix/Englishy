@@ -1,0 +1,8 @@
+# Check out text files with LF line endings on every OS, so a build on Windows matches the live Worker byte for byte.
+* text=auto eol=lf
+
+*.png binary
+*.woff2 binary
+
+# The compiled release recovered from the live site: kept as a reference, not edited by hand.
+frontend-compiled/** linguist-generated
