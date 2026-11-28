@@ -7,6 +7,9 @@ Englishy is an English-learning web app for absolute beginners through A1. It of
 ## Project layout
 
 - `frontend/` is the editable React, Vite and Tailwind CSS source for the browser app. `npm run build` there outputs `frontend/dist`, including a generated `sw.js` and `theme-init.js`.
+  - `frontend/sw-template.js` is the service worker source. `frontend/vite.config.ts` fills in its cache version and precache list and writes the result to `dist/sw.js`.
+  - `frontend/public/` (icons, web app manifest, offline page, `robots.txt`, `sitemap.xml`) is copied into the build unchanged.
+  - `frontend/scripts/` holds the course-content check, the backup merge tests and the parity tools described below. `frontend/scripts/check-worker.mjs` checks a running `npx wrangler dev`: deep links, static files and headers, the API, and offline use through the service worker.
 - `worker/` contains the recovered Cloudflare Worker API, NVIDIA client, usage safeguards and tutor prompts.
 - `shared/` contains the brand, constants, scenarios and validation schemas used by both the Worker and the frontend.
 - `deploy/embedded-worker.ts` is the Worker entry point. It passes `/api/*` requests to `worker/index.ts`. It also serves the embedded browser files with their content types and caching headers, and uses the app shell for routes such as `/learn`.
@@ -17,7 +20,7 @@ Inside `frontend/src`: `pages/` holds one file (or folder, for larger pages) per
 
 ## Local development
 
-Use Node.js 22 or newer (see `.nvmrc`) and npm from the repository root.
+Use Node.js 22.22 or newer (`.nvmrc` pins 22) and npm from the repository root.
 
 ```sh
 npm install          # also installs frontend/ dependencies
@@ -42,7 +45,7 @@ GitHub Actions runs these checks (and the dry run) on every pull request and pus
 
 ### Parity checks against the recovered release
 
-`frontend/scripts/` compares the rebuilt app with `frontend-compiled/` in Chromium. Serve the reference with the Worker on port 8787 (`FRONTEND_DIR=frontend-compiled`) and the rebuild with `npx vite preview --port 4173` in `frontend/`, then run:
+`frontend/scripts/` compares the rebuilt app with `frontend-compiled/` in Chromium. Serve the reference with the Worker on port 8787 (`FRONTEND_DIR=frontend-compiled`) and the rebuild with `npx vite preview --port 4173` in `frontend/`, then run these commands from `frontend/` (or call them as `frontend/scripts/...` from the repository root):
 
 ```sh
 node scripts/compare-pages.mjs <page>[,<page>...]   # screenshots, text, titles, API calls, console errors
@@ -50,7 +53,9 @@ node scripts/check-flow-data.mjs <page>[,...]       # stored IndexedDB and local
 node scripts/check-settings-data.mjs                # backup restore, replace, clear and preferences
 ```
 
-Pages and flows are defined in `scripts/compare-routes.mjs`. Every capture seeds the same saved learner, freezes time, disables animation and answers `/api/*` from fixtures, so no live AI is called. Set `CHROME_PATH` if Playwright's bundled browser is not installed.
+Pages and flows are defined in `frontend/scripts/compare-routes.mjs`. Every capture seeds the same saved learner, freezes time, disables animation and answers `/api/*` from fixtures, so no live AI is called. Set `CHROME_PATH` if Playwright's bundled browser is not installed.
+
+`npm --prefix frontend run check:profile` (`frontend/scripts/check-saved-profile.mjs`) opens five pages with the same saved learner on `REFERENCE_URL` and on `FRONTEND_URL` (default `http://127.0.0.1:4173`), and checks that both show the same states and keep the saved data. `REFERENCE_URL` defaults to the live site, which now serves the rebuild, so set it to `http://127.0.0.1:8787` to compare with the recovered release. This script reads `CHROMIUM_PATH` instead of `CHROME_PATH`.
 
 ## Rebuild notes
 
@@ -62,7 +67,7 @@ The rebuilt frontend matches the compiled release except for these intentional f
 
 | Area | Original behaviour | Rebuilt behaviour | Test |
 | --- | --- | --- | --- |
-| Settings → **Add to my progress (safe)** | When a backup lesson had a higher best score, its latest attempt score and date replaced a newer attempt already on the device. A newly completed backup row with a lower best score could also lower the stored best. | Keeps the higher best score, the larger attempt count and the earlier start date, and takes the latest attempt's score and date together from whichever record was updated more recently. Storage format is unchanged. | `frontend: npm run test:merge`, `scripts/check-settings-data.mjs --expect-merge-fix` |
+| Settings → **Add to my progress (safe)** | When a backup lesson had a higher best score, its latest attempt score and date replaced a newer attempt already on the device. A newly completed backup row with a lower best score could also lower the stored best. | Keeps the higher best score, the larger attempt count and the earlier start date, and takes the latest attempt's score and date together from whichever record was updated more recently. Storage format is unchanged. | `frontend: npm run test:merge`, `frontend/scripts/check-settings-data.mjs --expect-merge-fix` |
 
 ## Licence
 
